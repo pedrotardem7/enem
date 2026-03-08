@@ -57,6 +57,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // ---------- BANCO DE REPERTÓRIOS ----------
+
+  // Copiar repertório ao clicar
+  document.querySelectorAll('.rep-card[data-copy]').forEach(card => {
+    card.addEventListener('click', () => {
+      const texto = card.querySelector('.rep-texto').textContent.trim();
+      const autor = card.querySelector('.rep-autor').textContent.trim();
+      const completo = texto + ' ' + autor;
+
+      navigator.clipboard.writeText(completo).then(() => {
+        card.classList.add('copied');
+        showToast('Repertório copiado!');
+        setTimeout(() => card.classList.remove('copied'), 1500);
+      });
+    });
+  });
+
+  // Filtro de repertórios
+  const filtroRep = document.getElementById('filtro-repertorios');
+  if (filtroRep) {
+    filtroRep.addEventListener('input', () => {
+      const busca = filtroRep.value.toLowerCase().trim();
+      const grupos = document.querySelectorAll('.rep-grupo');
+
+      grupos.forEach(grupo => {
+        if (!busca) {
+          grupo.hidden = false;
+          grupo.open = false;
+          // Mostrar todos os cards
+          grupo.querySelectorAll('.rep-card').forEach(c => { c.style.display = ''; });
+          return;
+        }
+
+        const temas = (grupo.dataset.tema || '').toLowerCase();
+        const tituloGrupo = grupo.querySelector('summary').textContent.toLowerCase();
+
+        // Verificar cards individualmente
+        let temMatch = false;
+        grupo.querySelectorAll('.rep-card').forEach(card => {
+          const textoCard = card.textContent.toLowerCase();
+          if (textoCard.includes(busca) || temas.includes(busca) || tituloGrupo.includes(busca)) {
+            card.style.display = '';
+            temMatch = true;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        grupo.hidden = !temMatch;
+        if (temMatch) grupo.open = true;
+      });
+    });
+  }
+
   // ---------- HELPERS ----------
 
   /** Retorna todo o texto da redação concatenado */
@@ -438,14 +492,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnFecharFolha = document.getElementById('btn-fechar-folha');
   const btnImprimir    = document.getElementById('btn-imprimir');
 
-  const CHARS_POR_LINHA = 68; // chars por linha na folha ENEM (letra de fôrma)
+  const CHARS_POR_LINHA_CONFIG = {
+    small:  80,
+    medium: 68,
+    large:  52,
+  };
   const MAX_LINHAS = 30;
+  const folhaFonte = document.getElementById('folha-fonte');
 
   /**
    * Quebra o texto da redação em linhas simulando a folha ENEM.
    * Respeita quebra por palavra e parágrafos.
    */
-  function quebrarEmLinhas(texto) {
+  function quebrarEmLinhas(texto, charsPorLinha) {
     const paragrafos = texto.split('\n');
     const linhas = [];
 
@@ -464,7 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
       for (const palavra of palavras) {
         const teste = linhaAtual ? linhaAtual + ' ' + palavra : palavra;
         // Contar espaço extra na primeira linha do parágrafo (recuo)
-        const limite = primeiraDoParag ? CHARS_POR_LINHA - 8 : CHARS_POR_LINHA;
+        const limite = primeiraDoParag ? charsPorLinha - 8 : charsPorLinha;
 
         if (teste.length > limite) {
           linhas.push({ texto: linhaAtual, inicioParag: primeiraDoParag });
@@ -490,8 +549,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const temaVal = document.getElementById('tema').value.trim();
     folhaTemaTexto.textContent = temaVal || '(sem tema definido)';
 
+    // Tamanho da fonte
+    const tamanho = folhaFonte.value;
+    const charsPorLinha = CHARS_POR_LINHA_CONFIG[tamanho] || 68;
+
+    // Aplicar classe de fonte
+    folhaPapel.className = 'folha-papel fonte-' + tamanho;
+
     // Quebrar texto em linhas
-    const linhasTexto = quebrarEmLinhas(texto);
+    const linhasTexto = quebrarEmLinhas(texto, charsPorLinha);
 
     // Gerar as 30 linhas (ou mais se ultrapassar)
     const totalLinhas = Math.max(MAX_LINHAS, linhasTexto.length);
@@ -545,6 +611,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnFolha.addEventListener('click', abrirFolha);
   btnFecharFolha.addEventListener('click', fecharFolha);
+
+  // Reagerar folha ao mudar tamanho da fonte
+  folhaFonte.addEventListener('change', () => {
+    if (!folhaOverlay.hidden) abrirFolha();
+  });
 
   // Fechar ao clicar fora do modal
   folhaOverlay.addEventListener('click', (e) => {

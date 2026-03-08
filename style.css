@@ -489,6 +489,98 @@ details summary:hover {
   margin-top: .3rem;
 }
 
+/* ===== BANCO DE REPERTÓRIOS ===== */
+#filtro-repertorios {
+  margin-bottom: 1rem;
+}
+
+.rep-grupo {
+  margin-bottom: .6rem;
+}
+
+.rep-grupo summary {
+  cursor: pointer;
+  padding: .6rem .5rem;
+  font-size: .95rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  border-radius: 8px;
+  transition: background .2s;
+}
+
+.rep-grupo summary:hover {
+  background: var(--surface-hover);
+}
+
+.rep-icone {
+  font-size: 1.1rem;
+}
+
+.rep-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: .7rem;
+  padding: .5rem 0 .8rem;
+}
+
+.rep-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .8rem 1rem;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+}
+
+.rep-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
+}
+
+.rep-card.copied {
+  border-color: var(--success);
+}
+
+.rep-tipo {
+  display: inline-block;
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: .15rem .5rem;
+  border-radius: 4px;
+  margin-bottom: .4rem;
+  background: rgba(219, 39, 119, .12);
+  color: var(--accent-hover);
+}
+
+.rep-texto {
+  font-size: .85rem;
+  line-height: 1.5;
+  color: var(--text);
+  margin-bottom: .4rem;
+}
+
+.rep-autor {
+  font-size: .75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.rep-grupo[hidden] {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .rep-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ===== BOTÕES ===== */
 .btn-row {
   display: flex;
@@ -551,8 +643,12 @@ details summary:hover {
   padding: 1.5rem;
   margin-top: .5rem;
   white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   font-size: .95rem;
   line-height: 1.8;
+  max-height: 500px;
+  overflow-y: auto;
 }
 
 /* ===== TOAST ===== */
@@ -669,6 +765,7 @@ footer {
   padding: 1.2rem 1.5rem 1.2rem 3.5rem;
   position: relative;
   min-height: 300px;
+  overflow-x: hidden;
 }
 
 /* Margem esquerda vermelha */
@@ -709,6 +806,61 @@ footer {
   line-height: 1.6;
   padding: 2px 0;
   min-height: 24px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Tamanhos de fonte da folha */
+.folha-papel.fonte-small .folha-linha-texto {
+  font-size: .78rem;
+}
+
+.folha-papel.fonte-small .folha-linha {
+  min-height: 24px;
+}
+
+.folha-papel.fonte-medium .folha-linha-texto {
+  font-size: .92rem;
+}
+
+.folha-papel.fonte-medium .folha-linha {
+  min-height: 28px;
+}
+
+.folha-papel.fonte-large .folha-linha-texto {
+  font-size: 1.1rem;
+}
+
+.folha-papel.fonte-large .folha-linha {
+  min-height: 34px;
+}
+
+/* Opções da folha */
+.folha-opcoes {
+  padding: .6rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.folha-opcoes label {
+  font-size: .8rem;
+  color: var(--text-muted);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.folha-opcoes select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: .35rem .6rem;
+  font-size: .8rem;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .folha-linha.vazia .folha-linha-texto {
