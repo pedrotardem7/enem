@@ -113,7 +113,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------- HELPERS ----------
 
-  /** Retorna todo o texto da redação concatenado */
+  /** Monta o texto completo da redação com parágrafos separados (igual ao "gerar redação") */
+  function montarTextoCompleto() {
+    const partes = [];
+
+    // Função auxiliar: remove quebras de linha internas dos campos (usuário pode dar Enter no textarea)
+    const limpar = (txt) => txt.replace(/\n+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+
+    const intro = [limpar(campos.introContexto.value), limpar(campos.introTese.value)]
+      .filter(Boolean).join(' ');
+    if (intro) partes.push(intro);
+
+    const d1 = [limpar(campos.d1Argumento.value), limpar(campos.d1Explicacao.value), limpar(campos.d1Repertorio.value)]
+      .filter(Boolean).join(' ');
+    if (d1) partes.push(d1);
+
+    const d2 = [limpar(campos.d2Argumento.value), limpar(campos.d2Explicacao.value), limpar(campos.d2Repertorio.value)]
+      .filter(Boolean).join(' ');
+    if (d2) partes.push(d2);
+
+    const conc = [
+      limpar(campos.concRetomada.value),
+      limpar(campos.concAgente.value),
+      limpar(campos.concAcao.value),
+      limpar(campos.concMeio.value),
+      limpar(campos.concFinalidade.value),
+      limpar(campos.concDetalhamento.value),
+    ].filter(Boolean).join(' ');
+    if (conc) partes.push(conc);
+
+    return partes.join('\n\n');
+  }
+
+  /** Retorna todo o texto da redação concatenado (para contagem de palavras/chars) */
   function getTextoCompleto() {
     return Object.values(campos)
       .map(el => el.value.trim())
@@ -128,16 +160,48 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Estima linhas de caderno ENEM (~33 caracteres por linha manuscrita)
-   * Cada parágrafo novo ocupa ao menos 1 linha
+   * Estima linhas de caderno ENEM usando a mesma lógica da folha.
+   * Usa 68 chars/linha (igual ao "médio" da folha) para manter consistência.
    */
   function estimarLinhas(texto) {
     if (!texto.trim()) return 0;
-    const paragrafos = texto.split(/\n+/).filter(p => p.trim());
-    let linhas = 0;
-    for (const p of paragrafos) {
-      linhas += Math.max(1, Math.ceil(p.length / 33));
+    const linhas = quebrarEmLinhasUtil(texto, 75);
+    return linhas.length;
+  }
+
+  /**
+   * Quebra texto em linhas simulando a folha ENEM.
+   * Função utilitária usada tanto nas stats quanto na folha.
+   */
+  function quebrarEmLinhasUtil(texto, charsPorLinha) {
+    const paragrafos = texto.split('\n');
+    const linhas = [];
+
+    for (let pi = 0; pi < paragrafos.length; pi++) {
+      const paragrafo = paragrafos[pi].trim();
+      if (!paragrafo) continue;
+
+      const palavras = paragrafo.split(/\s+/);
+      let linhaAtual = '';
+      let primeiraDoParag = true;
+
+      for (const palavra of palavras) {
+        const teste = linhaAtual ? linhaAtual + ' ' + palavra : palavra;
+        const limite = primeiraDoParag ? charsPorLinha - 8 : charsPorLinha;
+
+        if (teste.length > limite) {
+          linhas.push({ texto: linhaAtual, inicioParag: primeiraDoParag });
+          primeiraDoParag = false;
+          linhaAtual = palavra;
+        } else {
+          linhaAtual = teste;
+        }
+      }
+      if (linhaAtual) {
+        linhas.push({ texto: linhaAtual, inicioParag: primeiraDoParag });
+      }
     }
+
     return linhas;
   }
 
@@ -207,7 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function atualizarStats() {
     const texto    = getTextoCompleto();
     const palavras = contarPalavras(texto);
-    const linhas   = estimarLinhas(texto);
+    const textoComParag = montarTextoCompleto();
+    const linhas   = estimarLinhas(textoComParag);
     const chars    = texto.length;
 
     // Palavras
@@ -278,13 +343,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Linhas
-    const texto  = getTextoCompleto();
-    const linhas = estimarLinhas(texto);
+    const textoAvisos = montarTextoCompleto();
+    const linhas = estimarLinhas(textoAvisos);
     if (linhas > 30) {
       avisos.push({ tipo: 'error', msg: `❌ Sua redação ultrapassou 30 linhas (≈${linhas} linhas). Reduza o texto!` });
     }
 
     // Palavras
+    const texto  = getTextoCompleto();
     const palavras = contarPalavras(texto);
     if (palavras > 0 && palavras < 200) {
       avisos.push({ tipo: 'warn', msg: `⚠️ Sua redação está curta (${palavras} palavras). Tente chegar a pelo menos 220.` });
@@ -332,40 +398,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---------- GERAR REDAÇÃO ----------
 
   function gerarRedacao() {
-    const partes = [];
+    // Usa a mesma função que monta texto para stats (limpa enters)
+    const textoFinal = montarTextoCompleto();
 
-    // Introdução
-    const intro = [campos.introContexto.value.trim(), campos.introTese.value.trim()]
-      .filter(Boolean).join(' ');
-    if (intro) partes.push(intro);
-
-    // Desenvolvimento 1
-    const d1 = [campos.d1Argumento.value.trim(), campos.d1Explicacao.value.trim(), campos.d1Repertorio.value.trim()]
-      .filter(Boolean).join(' ');
-    if (d1) partes.push(d1);
-
-    // Desenvolvimento 2
-    const d2 = [campos.d2Argumento.value.trim(), campos.d2Explicacao.value.trim(), campos.d2Repertorio.value.trim()]
-      .filter(Boolean).join(' ');
-    if (d2) partes.push(d2);
-
-    // Conclusão
-    const conc = [
-      campos.concRetomada.value.trim(),
-      campos.concAgente.value.trim(),
-      campos.concAcao.value.trim(),
-      campos.concMeio.value.trim(),
-      campos.concFinalidade.value.trim(),
-      campos.concDetalhamento.value.trim(),
-    ].filter(Boolean).join(' ');
-    if (conc) partes.push(conc);
-
-    if (partes.length === 0) {
+    if (!textoFinal.trim()) {
       showToast('Preencha pelo menos um campo!');
       return;
     }
 
-    const textoFinal = partes.join('\n\n');
     redacaoTexto.textContent = textoFinal;
     redacaoFinal.hidden = false;
     btnCopiar.disabled  = false;
@@ -493,53 +533,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnImprimir    = document.getElementById('btn-imprimir');
 
   const CHARS_POR_LINHA_CONFIG = {
-    small:  80,
-    medium: 68,
-    large:  52,
+    small:  88,
+    medium: 75,
+    large:  58,
   };
   const MAX_LINHAS = 30;
   const folhaFonte = document.getElementById('folha-fonte');
-
-  /**
-   * Quebra o texto da redação em linhas simulando a folha ENEM.
-   * Respeita quebra por palavra e parágrafos.
-   */
-  function quebrarEmLinhas(texto, charsPorLinha) {
-    const paragrafos = texto.split('\n');
-    const linhas = [];
-
-    for (let pi = 0; pi < paragrafos.length; pi++) {
-      const paragrafo = paragrafos[pi].trim();
-      if (!paragrafo) {
-        // Parágrafo vazio = pular uma linha (se não for o primeiro)
-        if (linhas.length > 0) continue;
-        continue;
-      }
-
-      const palavras = paragrafo.split(/\s+/);
-      let linhaAtual = '';
-      let primeiraDoParag = true;
-
-      for (const palavra of palavras) {
-        const teste = linhaAtual ? linhaAtual + ' ' + palavra : palavra;
-        // Contar espaço extra na primeira linha do parágrafo (recuo)
-        const limite = primeiraDoParag ? charsPorLinha - 8 : charsPorLinha;
-
-        if (teste.length > limite) {
-          linhas.push({ texto: linhaAtual, inicioParag: primeiraDoParag });
-          primeiraDoParag = false;
-          linhaAtual = palavra;
-        } else {
-          linhaAtual = teste;
-        }
-      }
-      if (linhaAtual) {
-        linhas.push({ texto: linhaAtual, inicioParag: primeiraDoParag });
-      }
-    }
-
-    return linhas;
-  }
 
   function abrirFolha() {
     const texto = redacaoTexto.textContent;
@@ -556,8 +555,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Aplicar classe de fonte
     folhaPapel.className = 'folha-papel fonte-' + tamanho;
 
-    // Quebrar texto em linhas
-    const linhasTexto = quebrarEmLinhas(texto, charsPorLinha);
+    // Quebrar texto em linhas (usa a função utilitária unificada)
+    const linhasTexto = quebrarEmLinhasUtil(texto, charsPorLinha);
 
     // Gerar as 30 linhas (ou mais se ultrapassar)
     const totalLinhas = Math.max(MAX_LINHAS, linhasTexto.length);
