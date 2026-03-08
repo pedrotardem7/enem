@@ -117,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function montarTextoCompleto() {
     const partes = [];
 
-    // Função auxiliar: remove quebras de linha internas dos campos (usuário pode dar Enter no textarea)
-    const limpar = (txt) => txt.replace(/\n+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+    // Função auxiliar: remove TODAS as quebras de linha internas dos campos
+    const limpar = (txt) => txt.replace(/[\r\n]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
 
     const intro = [limpar(campos.introContexto.value), limpar(campos.introTese.value)]
       .filter(Boolean).join(' ');
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /** Retorna todo o texto da redação concatenado (para contagem de palavras/chars) */
   function getTextoCompleto() {
     return Object.values(campos)
-      .map(el => el.value.trim())
+      .map(el => el.value.replace(/[\r\n]+/g, ' ').trim())
       .filter(Boolean)
       .join(' ');
   }
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /**
    * Estima linhas de caderno ENEM usando a mesma lógica da folha.
-   * Usa 68 chars/linha (igual ao "médio" da folha) para manter consistência.
+   * Usa 75 chars/linha (igual ao "médio" da folha) para manter consistência.
    */
   function estimarLinhas(texto) {
     if (!texto.trim()) return 0;
@@ -174,7 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
    * Função utilitária usada tanto nas stats quanto na folha.
    */
   function quebrarEmLinhasUtil(texto, charsPorLinha) {
-    const paragrafos = texto.split('\n');
+    // Normalizar quebras de linha: \r\n ou \r vira \n
+    const textoNorm = texto.replace(/\r\n?/g, '\n');
+    const paragrafos = textoNorm.split('\n');
     const linhas = [];
 
     for (let pi = 0; pi < paragrafos.length; pi++) {
