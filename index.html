@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizador de Redação ENEM SOPHINHA</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>📝 Organizador de Redação ENEM SOPHINHA</h1>
+    <p class="subtitle">Monte sua redação passo a passo seguindo o modelo oficial</p>
+  </header>
+
+  <main>
+
+    <!-- ========== TEMA ========== -->
+    <section class="card" id="card-tema">
+      <h2>🎯 Tema da Redação</h2>
+      <input type="text" id="tema" placeholder="Ex: Os desafios da saúde mental no Brasil contemporâneo">
+    </section>
+
+    <!-- ========== INTRODUÇÃO ========== -->
+    <section class="card" id="card-intro">
+      <h2>1️⃣ Introdução</h2>
+
+      <label for="intro-contexto">Contextualização do tema:</label>
+      <textarea id="intro-contexto" rows="3" placeholder="Apresente o tema de forma geral. Use um repertório sociocultural (dado, citação, fato histórico…)"></textarea>
+
+      <label for="intro-tese">Tese (sua opinião / posicionamento):</label>
+      <textarea id="intro-tese" rows="2" placeholder="Deixe claro qual é o seu ponto de vista sobre o tema"></textarea>
+
+      <div class="dica-box">
+        <strong>💡 Dica:</strong> Use um conectivo para iniciar — veja o banco de conectivos abaixo.
+      </div>
+    </section>
+
+    <!-- ========== DESENVOLVIMENTO 1 ========== -->
+    <section class="card" id="card-d1">
+      <h2>2️⃣ Desenvolvimento 1</h2>
+
+      <label for="d1-argumento">Argumento 1:</label>
+      <textarea id="d1-argumento" rows="2" placeholder="Apresente seu primeiro argumento que defende a tese"></textarea>
+
+      <label for="d1-explicacao">Explicação:</label>
+      <textarea id="d1-explicacao" rows="2" placeholder="Desenvolva e aprofunde o argumento"></textarea>
+
+      <label for="d1-repertorio">Exemplo / Repertório sociocultural:</label>
+      <textarea id="d1-repertorio" rows="2" placeholder="Dados, citações, filmes, livros, fatos históricos…"></textarea>
+    </section>
+
+    <!-- ========== DESENVOLVIMENTO 2 ========== -->
+    <section class="card" id="card-d2">
+      <h2>3️⃣ Desenvolvimento 2</h2>
+
+      <label for="d2-argumento">Argumento 2:</label>
+      <textarea id="d2-argumento" rows="2" placeholder="Apresente seu segundo argumento"></textarea>
+
+      <label for="d2-explicacao">Explicação:</label>
+      <textarea id="d2-explicacao" rows="2" placeholder="Desenvolva e aprofunde o argumento"></textarea>
+
+      <label for="d2-repertorio">Exemplo / Repertório sociocultural:</label>
+      <textarea id="d2-repertorio" rows="2" placeholder="Dados, citações, filmes, livros, fatos históricos…"></textarea>
+    </section>
+
+    <!-- ========== CONCLUSÃO ========== -->
+    <section class="card" id="card-conclusao">
+      <h2>4️⃣ Conclusão</h2>
+
+      <label for="conc-retomada">Retomada da tese:</label>
+      <textarea id="conc-retomada" rows="2" placeholder="Retome brevemente seu posicionamento"></textarea>
+
+      <h3>📌 Proposta de Intervenção</h3>
+
+      <label for="conc-agente">Agente (quem vai agir):</label>
+      <input type="text" id="conc-agente" placeholder="Ex: O Ministério da Saúde">
+
+      <label for="conc-acao">Ação (o que será feito):</label>
+      <textarea id="conc-acao" rows="2" placeholder="Ex: deve criar campanhas de conscientização"></textarea>
+
+      <label for="conc-meio">Meio (como será feito):</label>
+      <textarea id="conc-meio" rows="2" placeholder="Ex: por meio de propagandas em redes sociais e escolas"></textarea>
+
+      <label for="conc-finalidade">Finalidade (para quê):</label>
+      <textarea id="conc-finalidade" rows="2" placeholder="Ex: a fim de reduzir o estigma em torno da saúde mental"></textarea>
+
+      <label for="conc-detalhamento">Detalhamento (informação extra):</label>
+      <textarea id="conc-detalhamento" rows="2" placeholder="Ex: garantindo acompanhamento psicológico gratuito pelo SUS"></textarea>
+    </section>
+
+    <!-- ========== CONTADORES & AVISOS ========== -->
+    <section class="card" id="card-stats">
+      <h2>📊 Estatísticas</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">Palavras</span>
+          <span class="stat-value" id="stat-palavras">0</span>
+          <span class="stat-hint">Ideal: 220–300</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Linhas (≈)</span>
+          <span class="stat-value" id="stat-linhas">0</span>
+          <span class="stat-hint">Máximo: 30</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Caracteres</span>
+          <span class="stat-value" id="stat-caracteres">0</span>
+        </div>
+      </div>
+      <div id="avisos" class="avisos-box"></div>
+    </section>
+
+    <!-- ========== CHECKLIST COMPETÊNCIAS ========== -->
+    <section class="card" id="card-checklist">
+      <h2>✅ Checklist das Competências</h2>
+      <p class="checklist-desc">Marque o que você já utilizou na redação:</p>
+      <ul class="checklist">
+        <li><label><input type="checkbox" data-comp="1"> Usei norma culta (sem erros gramaticais graves)</label></li>
+        <li><label><input type="checkbox" data-comp="2"> Compreendi e desenvolvi o tema proposto</label></li>
+        <li><label><input type="checkbox" data-comp="2b"> Não fugi do tema</label></li>
+        <li><label><input type="checkbox" data-comp="3"> Usei conectivos na introdução</label></li>
+        <li><label><input type="checkbox" data-comp="3b"> Usei conectivos entre parágrafos</label></li>
+        <li><label><input type="checkbox" data-comp="3c"> Apresentei tese clara</label></li>
+        <li><label><input type="checkbox" data-comp="4"> Usei repertório sociocultural (citação, dado, referência)</label></li>
+        <li><label><input type="checkbox" data-comp="4b"> Argumentação é coerente e organizada</label></li>
+        <li><label><input type="checkbox" data-comp="5"> Fiz proposta de intervenção</label></li>
+        <li><label><input type="checkbox" data-comp="5b"> Proposta tem agente</label></li>
+        <li><label><input type="checkbox" data-comp="5c"> Proposta tem ação</label></li>
+        <li><label><input type="checkbox" data-comp="5d"> Proposta tem meio</label></li>
+        <li><label><input type="checkbox" data-comp="5e"> Proposta tem finalidade</label></li>
+        <li><label><input type="checkbox" data-comp="5f"> Proposta tem detalhamento</label></li>
+      </ul>
+      <div class="checklist-progress">
+        <span id="checklist-count">0</span>/14 itens marcados
+        <div class="progress-bar"><div class="progress-fill" id="checklist-bar"></div></div>
+      </div>
+    </section>
+
+    <!-- ========== BANCO DE CONECTIVOS ========== -->
+    <section class="card" id="card-conectivos">
+      <h2>🔗 Banco de Conectivos</h2>
+
+      <details open>
+        <summary><strong>Introdução</strong></summary>
+        <div class="tags">
+          <span class="tag" data-copy>Diante desse cenário,</span>
+          <span class="tag" data-copy>Nesse contexto,</span>
+          <span class="tag" data-copy>É notório que</span>
+          <span class="tag" data-copy>Na sociedade contemporânea,</span>
+          <span class="tag" data-copy>Sob a perspectiva de…,</span>
+          <span class="tag" data-copy>Segundo…,</span>
+          <span class="tag" data-copy>De acordo com…,</span>
+          <span class="tag" data-copy>Hodiernamente,</span>
+        </div>
+      </details>
+
+      <details>
+        <summary><strong>Desenvolvimento</strong></summary>
+        <div class="tags">
+          <span class="tag" data-copy>Além disso,</span>
+          <span class="tag" data-copy>Ademais,</span>
+          <span class="tag" data-copy>Outrossim,</span>
+          <span class="tag" data-copy>Nessa perspectiva,</span>
+          <span class="tag" data-copy>Vale ressaltar que</span>
+          <span class="tag" data-copy>Em virtude disso,</span>
+          <span class="tag" data-copy>Sob essa ótica,</span>
+          <span class="tag" data-copy>Dessa maneira,</span>
+          <span class="tag" data-copy>Sendo assim,</span>
+          <span class="tag" data-copy>Diante disso,</span>
+        </div>
+      </details>
+
+      <details>
+        <summary><strong>Conclusão</strong></summary>
+        <div class="tags">
+          <span class="tag" data-copy>Portanto,</span>
+          <span class="tag" data-copy>Dessa forma,</span>
+          <span class="tag" data-copy>Logo,</span>
+          <span class="tag" data-copy>Em suma,</span>
+          <span class="tag" data-copy>Diante do exposto,</span>
+          <span class="tag" data-copy>É imprescindível que</span>
+          <span class="tag" data-copy>Torna-se necessário, portanto,</span>
+        </div>
+      </details>
+
+      <p class="tag-hint">Clique em um conectivo para copiar</p>
+    </section>
+
+    <!-- ========== GERAR REDAÇÃO ========== -->
+    <section class="card" id="card-gerar">
+      <h2>📑 Redação Final</h2>
+      <div class="btn-row">
+        <button id="btn-gerar" class="btn btn-primary">GERAR REDAÇÃO</button>
+        <button id="btn-copiar" class="btn btn-secondary" disabled>COPIAR TEXTO</button>
+        <button id="btn-limpar" class="btn btn-danger">LIMPAR TUDO</button>
+      </div>
+      <div id="redacao-final" class="redacao-output" hidden>
+        <div id="redacao-texto"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Organizador de Redação ENEM &mdash; Funciona 100% offline no navegador</p>
+  </footer>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
