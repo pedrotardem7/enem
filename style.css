@@ -925,6 +925,7 @@ footer {
 
 /* ===== PRINT ===== */
 @media print {
+  /* Esconder tudo exceto a folha */
   body * {
     visibility: hidden;
   }
@@ -934,17 +935,30 @@ footer {
     visibility: visible;
   }
 
+  /* Reset de layout para impressão fluir sem corte */
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0;
+    padding: 0;
+  }
+
   .folha-overlay {
     position: absolute;
     inset: 0;
     background: #fff;
     padding: 0;
+    overflow: visible !important;
+    height: auto !important;
   }
 
   .folha-modal {
     box-shadow: none;
     border: none;
     max-width: 100%;
+    overflow: visible !important;
+    height: auto !important;
+    page-break-inside: auto;
   }
 
   .folha-header,
@@ -953,12 +967,25 @@ footer {
   }
 
   .btn-fechar,
-  #btn-imprimir {
-    display: none;
+  #btn-imprimir,
+  .folha-opcoes {
+    display: none !important;
   }
 
   .folha-papel {
     padding-top: .5rem;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    page-break-inside: auto;
+  }
+
+  .folha-linha {
+    page-break-inside: avoid;
+  }
+
+  .folha-footer {
+    page-break-before: avoid;
   }
 }
 
