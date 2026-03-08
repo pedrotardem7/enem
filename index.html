@@ -13,6 +13,31 @@
     <p class="subtitle">Monte sua redação passo a passo seguindo o modelo oficial</p>
   </header>
 
+  <!-- ========== PROGRESSO POR SEÇÃO ========== -->
+  <nav id="progresso-nav">
+    <div class="progresso-container">
+      <a href="#card-intro" class="progresso-step" data-secao="intro">
+        <span class="step-icon">①</span>
+        <span class="step-label">Introdução</span>
+      </a>
+      <div class="step-line"></div>
+      <a href="#card-d1" class="progresso-step" data-secao="d1">
+        <span class="step-icon">②</span>
+        <span class="step-label">Desenv. 1</span>
+      </a>
+      <div class="step-line"></div>
+      <a href="#card-d2" class="progresso-step" data-secao="d2">
+        <span class="step-icon">③</span>
+        <span class="step-label">Desenv. 2</span>
+      </a>
+      <div class="step-line"></div>
+      <a href="#card-conclusao" class="progresso-step" data-secao="conc">
+        <span class="step-icon">④</span>
+        <span class="step-label">Conclusão</span>
+      </a>
+    </div>
+  </nav>
+
   <main>
 
     <!-- ========== TEMA ========== -->
@@ -283,6 +308,7 @@
       <h2>📑 Redação Final</h2>
       <div class="btn-row">
         <button id="btn-gerar" class="btn btn-primary">GERAR REDAÇÃO</button>
+        <button id="btn-folha" class="btn btn-secondary" disabled>📄 MODO FOLHA</button>
         <button id="btn-copiar" class="btn btn-secondary" disabled>COPIAR TEXTO</button>
         <button id="btn-limpar" class="btn btn-danger">LIMPAR TUDO</button>
       </div>
@@ -292,6 +318,27 @@
     </section>
 
   </main>
+
+  <!-- ========== MODAL FOLHA DE REDAÇÃO ========== -->
+  <div id="folha-overlay" class="folha-overlay" hidden>
+    <div class="folha-modal">
+      <div class="folha-header">
+        <h2>📄 Folha de Redação — Simulação ENEM</h2>
+        <button id="btn-fechar-folha" class="btn-fechar">&times;</button>
+      </div>
+      <div class="folha-tema">
+        <span>TEMA:</span>
+        <span id="folha-tema-texto"></span>
+      </div>
+      <div class="folha-papel" id="folha-papel">
+        <!-- 30 linhas serão geradas pelo JS -->
+      </div>
+      <div class="folha-footer">
+        <span id="folha-linhas-usadas">0</span>/30 linhas utilizadas
+        <button id="btn-imprimir" class="btn btn-primary btn-sm">🖨️ IMPRIMIR</button>
+      </div>
+    </div>
+  </div>
 
   <footer>
     <p>Organizador de Redação ENEM &mdash; Funciona 100% offline no navegador</p>

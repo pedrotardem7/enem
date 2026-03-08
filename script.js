@@ -28,7 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const checklistBar   = document.getElementById('checklist-bar');
   const checklistCount = document.getElementById('checklist-count');
   const btnGerar       = document.getElementById('btn-gerar');
-  const btnCopiar      = document.getElementById('btn-copiar');
+  const btnFolha        = document.getElementById('btn-folha');
+  const btnCopiar       = document.getElementById('btn-copiar');
   const btnLimpar      = document.getElementById('btn-limpar');
   const redacaoFinal   = document.getElementById('redacao-final');
   const redacaoTexto   = document.getElementById('redacao-texto');
@@ -95,6 +96,56 @@ document.addEventListener('DOMContentLoaded', () => {
       toast.classList.remove('show');
       setTimeout(() => { toast.hidden = true; }, 300);
     }, duracao);
+  }
+
+  // ---------- PROGRESSO VISUAL POR SEÇÃO ----------
+
+  const secoes = {
+    intro: {
+      campos: [campos.introContexto, campos.introTese],
+      step: document.querySelector('.progresso-step[data-secao="intro"]'),
+    },
+    d1: {
+      campos: [campos.d1Argumento, campos.d1Explicacao, campos.d1Repertorio],
+      step: document.querySelector('.progresso-step[data-secao="d1"]'),
+    },
+    d2: {
+      campos: [campos.d2Argumento, campos.d2Explicacao, campos.d2Repertorio],
+      step: document.querySelector('.progresso-step[data-secao="d2"]'),
+    },
+    conc: {
+      campos: [campos.concRetomada, campos.concAgente, campos.concAcao, campos.concMeio, campos.concFinalidade, campos.concDetalhamento],
+      step: document.querySelector('.progresso-step[data-secao="conc"]'),
+    },
+  };
+
+  function atualizarProgresso() {
+    const keys = Object.keys(secoes);
+    const lines = document.querySelectorAll('.step-line');
+
+    keys.forEach((key, i) => {
+      const sec = secoes[key];
+      const preenchidos = sec.campos.filter(c => c.value.trim()).length;
+      const total = sec.campos.length;
+
+      sec.step.classList.remove('partial', 'done');
+      if (preenchidos === total) {
+        sec.step.classList.add('done');
+      } else if (preenchidos > 0) {
+        sec.step.classList.add('partial');
+      }
+
+      // Atualizar linha entre steps
+      if (i < lines.length) {
+        lines[i].classList.remove('partial', 'done');
+        // A linha fica "done" se a seção atual está completa
+        if (preenchidos === total) {
+          lines[i].classList.add('done');
+        } else if (preenchidos > 0) {
+          lines[i].classList.add('partial');
+        }
+      }
+    });
   }
 
   // ---------- ATUALIZAR ESTATÍSTICAS ----------
@@ -264,6 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
     redacaoTexto.textContent = textoFinal;
     redacaoFinal.hidden = false;
     btnCopiar.disabled  = false;
+    btnFolha.disabled   = false;
 
     showToast('Redação gerada com sucesso!');
 
@@ -301,6 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
     redacaoFinal.hidden = true;
     redacaoTexto.textContent = '';
     btnCopiar.disabled = true;
+    btnFolha.disabled  = true;
 
     // Atualizar tudo
     atualizarStats();
@@ -318,6 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('input', () => {
       atualizarStats();
       atualizarAvisos();
+      atualizarProgresso();
     });
   });
 
@@ -373,4 +427,137 @@ document.addEventListener('DOMContentLoaded', () => {
   atualizarStats();
   atualizarAvisos();
   atualizarChecklist();
+  atualizarProgresso();
+
+  // ---------- MODO FOLHA DE REDAÇÃO ----------
+
+  const folhaOverlay   = document.getElementById('folha-overlay');
+  const folhaPapel     = document.getElementById('folha-papel');
+  const folhaTemaTexto = document.getElementById('folha-tema-texto');
+  const folhaLinhasUsd = document.getElementById('folha-linhas-usadas');
+  const btnFecharFolha = document.getElementById('btn-fechar-folha');
+  const btnImprimir    = document.getElementById('btn-imprimir');
+
+  const CHARS_POR_LINHA = 68; // chars por linha na folha ENEM (letra de fôrma)
+  const MAX_LINHAS = 30;
+
+  /**
+   * Quebra o texto da redação em linhas simulando a folha ENEM.
+   * Respeita quebra por palavra e parágrafos.
+   */
+  function quebrarEmLinhas(texto) {
+    const paragrafos = texto.split('\n');
+    const linhas = [];
+
+    for (let pi = 0; pi < paragrafos.length; pi++) {
+      const paragrafo = paragrafos[pi].trim();
+      if (!paragrafo) {
+        // Parágrafo vazio = pular uma linha (se não for o primeiro)
+        if (linhas.length > 0) continue;
+        continue;
+      }
+
+      const palavras = paragrafo.split(/\s+/);
+      let linhaAtual = '';
+      let primeiraDoParag = true;
+
+      for (const palavra of palavras) {
+        const teste = linhaAtual ? linhaAtual + ' ' + palavra : palavra;
+        // Contar espaço extra na primeira linha do parágrafo (recuo)
+        const limite = primeiraDoParag ? CHARS_POR_LINHA - 8 : CHARS_POR_LINHA;
+
+        if (teste.length > limite) {
+          linhas.push({ texto: linhaAtual, inicioParag: primeiraDoParag });
+          primeiraDoParag = false;
+          linhaAtual = palavra;
+        } else {
+          linhaAtual = teste;
+        }
+      }
+      if (linhaAtual) {
+        linhas.push({ texto: linhaAtual, inicioParag: primeiraDoParag });
+      }
+    }
+
+    return linhas;
+  }
+
+  function abrirFolha() {
+    const texto = redacaoTexto.textContent;
+    if (!texto) return;
+
+    // Tema
+    const temaVal = document.getElementById('tema').value.trim();
+    folhaTemaTexto.textContent = temaVal || '(sem tema definido)';
+
+    // Quebrar texto em linhas
+    const linhasTexto = quebrarEmLinhas(texto);
+
+    // Gerar as 30 linhas (ou mais se ultrapassar)
+    const totalLinhas = Math.max(MAX_LINHAS, linhasTexto.length);
+    folhaPapel.innerHTML = '';
+
+    for (let i = 0; i < totalLinhas; i++) {
+      const div = document.createElement('div');
+      div.className = 'folha-linha';
+
+      if (i >= MAX_LINHAS) div.classList.add('excedente');
+
+      const item = linhasTexto[i];
+
+      if (item) {
+        if (item.inicioParag) div.classList.add('paragrafo-inicio');
+      } else {
+        div.classList.add('vazia');
+      }
+
+      div.innerHTML = `
+        <span class="folha-linha-num">${String(i + 1).padStart(2, '0')}</span>
+        <span class="folha-linha-texto">${item ? escapeHTML(item.texto) : '&nbsp;'}</span>
+      `;
+
+      folhaPapel.appendChild(div);
+    }
+
+    // Contador
+    const usadas = linhasTexto.length;
+    folhaLinhasUsd.textContent = usadas;
+    if (usadas > MAX_LINHAS) {
+      folhaLinhasUsd.style.color = 'var(--danger)';
+    } else {
+      folhaLinhasUsd.style.color = '';
+    }
+
+    folhaOverlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function fecharFolha() {
+    folhaOverlay.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  btnFolha.addEventListener('click', abrirFolha);
+  btnFecharFolha.addEventListener('click', fecharFolha);
+
+  // Fechar ao clicar fora do modal
+  folhaOverlay.addEventListener('click', (e) => {
+    if (e.target === folhaOverlay) fecharFolha();
+  });
+
+  // Fechar com ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !folhaOverlay.hidden) fecharFolha();
+  });
+
+  // Imprimir
+  btnImprimir.addEventListener('click', () => {
+    window.print();
+  });
 });
