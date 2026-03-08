@@ -159,39 +159,59 @@ document.addEventListener('DOMContentLoaded', () => {
     return texto.trim().split(/\s+/).length;
   }
 
+  // ---------- MEDIÇÃO PRECISA COM CANVAS ----------
+
+  const _mCanvas = document.createElement('canvas');
+  const _mCtx = _mCanvas.getContext('2d');
+
   /**
-   * Estima linhas de caderno ENEM usando a mesma lógica da folha.
-   * Usa 75 chars/linha (igual ao "médio" da folha) para manter consistência.
+   * Fontes que correspondem EXATAMENTE ao CSS da .folha-linha-texto.
+   * .78rem, .92rem, 1.1rem convertidos para px (assumindo 16px root).
    */
-  function estimarLinhas(texto) {
-    if (!texto.trim()) return 0;
-    const linhas = quebrarEmLinhasUtil(texto, 75);
-    return linhas.length;
+  const FOLHA_FONTS = {
+    small:  '12.48px "Segoe Script", "Comic Sans MS", "Caveat", cursive',
+    medium: '14.72px "Segoe Script", "Comic Sans MS", "Caveat", cursive',
+    large:  '17.6px "Segoe Script", "Comic Sans MS", "Caveat", cursive',
+  };
+
+  /** Largura estimada da área de texto em px (atualizada ao abrir folha) */
+  let folhaLarguraCache = 0;
+  /** Largura da indentação de parágrafo em px (atualizada ao abrir folha) */
+  let folhaIndentCache = 0;
+
+  /** Mede largura de uma string usando a mesma fonte do folha */
+  function medirTexto(str, font) {
+    _mCtx.font = font;
+    return _mCtx.measureText(str).width;
   }
 
   /**
-   * Quebra texto em linhas simulando a folha ENEM.
-   * Função utilitária usada tanto nas stats quanto na folha.
+   * Quebra texto em linhas usando medição de pixels — 100% fiel ao rendering.
+   * Substitui a antiga quebra por contagem de caracteres.
    */
-  function quebrarEmLinhasUtil(texto, charsPorLinha) {
-    // Normalizar quebras de linha: \r\n ou \r vira \n
+  function quebrarEmLinhas(texto, fonteKey, largura, indent) {
+    const font = FOLHA_FONTS[fonteKey] || FOLHA_FONTS.medium;
+    const larg = (largura || folhaLarguraCache || 580) * 0.98; // 2% margem segurança
+    const indentPx = indent || folhaIndentCache || 32;
+
     const textoNorm = texto.replace(/\r\n?/g, '\n');
     const paragrafos = textoNorm.split('\n');
     const linhas = [];
 
-    for (let pi = 0; pi < paragrafos.length; pi++) {
-      const paragrafo = paragrafos[pi].trim();
-      if (!paragrafo) continue;
+    for (const paragrafo of paragrafos) {
+      const p = paragrafo.trim();
+      if (!p) continue;
 
-      const palavras = paragrafo.split(/\s+/);
+      const palavras = p.split(/\s+/);
       let linhaAtual = '';
       let primeiraDoParag = true;
 
       for (const palavra of palavras) {
         const teste = linhaAtual ? linhaAtual + ' ' + palavra : palavra;
-        const limite = primeiraDoParag ? charsPorLinha - 8 : charsPorLinha;
+        const largTeste = medirTexto(teste, font);
+        const limite = primeiraDoParag ? (larg - indentPx) : larg;
 
-        if (teste.length > limite) {
+        if (largTeste > limite && linhaAtual) {
           linhas.push({ texto: linhaAtual, inicioParag: primeiraDoParag });
           primeiraDoParag = false;
           linhaAtual = palavra;
@@ -205,6 +225,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     return linhas;
+  }
+
+  /**
+   * Estima linhas de caderno ENEM usando medição de pixels.
+   * Usa fonte "medium" como referência (padrão da folha).
+   */
+  function estimarLinhas(texto) {
+    if (!texto.trim()) return 0;
+    return quebrarEmLinhas(texto, 'medium').length;
   }
 
   /** Mostra um toast temporário */
@@ -517,6 +546,114 @@ document.addEventListener('DOMContentLoaded', () => {
     cb.addEventListener('change', salvar);
   });
 
+  // ---------- EXPORTAR / IMPORTAR PROJETO ----------
+
+  const btnExportar    = document.getElementById('btn-exportar');
+  const btnImportarUI  = document.getElementById('btn-importar');
+  const inputImportar  = document.getElementById('input-importar');
+
+  function coletarDados() {
+    const dados = {};
+    dados.tema = document.getElementById('tema').value;
+    for (const [key, el] of Object.entries(campos)) {
+      dados[key] = el.value;
+    }
+    const checks = {};
+    document.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb => {
+      checks[cb.dataset.comp] = cb.checked;
+    });
+    dados._checklist = checks;
+    return dados;
+  }
+
+  function restaurarDados(dados) {
+    if (dados.tema) document.getElementById('tema').value = dados.tema;
+    for (const [key, el] of Object.entries(campos)) {
+      if (dados[key] !== undefined) el.value = dados[key];
+    }
+    if (dados._checklist) {
+      document.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb => {
+        if (dados._checklist[cb.dataset.comp] !== undefined) {
+          cb.checked = dados._checklist[cb.dataset.comp];
+        }
+      });
+    }
+    salvar();
+    atualizarStats();
+    atualizarAvisos();
+    atualizarChecklist();
+    atualizarProgresso();
+  }
+
+  // Exportar
+  btnExportar.addEventListener('click', () => {
+    const dados = coletarDados();
+    dados._exportadoEm = new Date().toISOString();
+    dados._versao = 'ENEM-SOPHINHA-v1';
+
+    const tema = (dados.tema || 'sem-tema').replace(/[^a-zA-Z0-9À-ú ]/g, '').trim().replace(/\s+/g, '-').substring(0, 40);
+    const dataStr = new Date().toISOString().slice(0, 10);
+    const nomeArquivo = `redacao-${tema}-${dataStr}.sophinha`;
+
+    const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nomeArquivo;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast('Projeto exportado com sucesso!');
+  });
+
+  // Importar — abrir seletor de arquivo
+  btnImportarUI.addEventListener('click', () => {
+    inputImportar.value = '';
+    inputImportar.click();
+  });
+
+  // Importar — processar arquivo selecionado
+  inputImportar.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validar extensão
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext !== 'json' && ext !== 'sophinha') {
+      showToast('Arquivo inválido! Use .sophinha ou .json', 3500);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const dados = JSON.parse(ev.target.result);
+
+        // Verificar se parece ser um arquivo válido
+        const temCampos = Object.keys(campos).some(k => dados[k] !== undefined);
+        if (!temCampos && !dados.tema) {
+          showToast('Arquivo não contém dados de redação!', 3500);
+          return;
+        }
+
+        // Confirmar substituição
+        const textoAtual = getTextoCompleto();
+        if (textoAtual.trim()) {
+          const confirma = confirm('Isso vai substituir todos os campos atuais. Deseja continuar?');
+          if (!confirma) return;
+        }
+
+        restaurarDados(dados);
+        showToast('Projeto importado com sucesso!');
+      } catch {
+        showToast('Erro ao ler o arquivo! Verifique se é um arquivo válido.', 3500);
+      }
+    };
+    reader.readAsText(file);
+  });
+
   // ---------- INICIALIZAÇÃO ----------
 
   carregar();
@@ -534,11 +671,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnFecharFolha = document.getElementById('btn-fechar-folha');
   const btnImprimir    = document.getElementById('btn-imprimir');
 
-  const CHARS_POR_LINHA_CONFIG = {
-    small:  88,
-    medium: 75,
-    large:  58,
-  };
   const MAX_LINHAS = 30;
   const folhaFonte = document.getElementById('folha-fonte');
 
@@ -552,13 +684,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Tamanho da fonte
     const tamanho = folhaFonte.value;
-    const charsPorLinha = CHARS_POR_LINHA_CONFIG[tamanho] || 68;
 
     // Aplicar classe de fonte
     folhaPapel.className = 'folha-papel fonte-' + tamanho;
 
-    // Quebrar texto em linhas (usa a função utilitária unificada)
-    const linhasTexto = quebrarEmLinhasUtil(texto, charsPorLinha);
+    // ---- Medir largura real da área de texto no DOM ----
+    folhaOverlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    // Criar linha temporária para medir largura normal
+    folhaPapel.innerHTML = '';
+    const tmpNormal = document.createElement('div');
+    tmpNormal.className = 'folha-linha';
+    tmpNormal.innerHTML = '<span class="folha-linha-num">01</span><span class="folha-linha-texto">X</span>';
+    folhaPapel.appendChild(tmpNormal);
+
+    // Criar linha temporária para medir largura com indentação
+    const tmpIndent = document.createElement('div');
+    tmpIndent.className = 'folha-linha paragrafo-inicio';
+    tmpIndent.innerHTML = '<span class="folha-linha-num">02</span><span class="folha-linha-texto">X</span>';
+    folhaPapel.appendChild(tmpIndent);
+
+    const largNormal = tmpNormal.querySelector('.folha-linha-texto').clientWidth;
+    const largIndent = tmpIndent.querySelector('.folha-linha-texto').clientWidth;
+    const indentPx = Math.max(0, largNormal - largIndent);
+
+    // Guardar no cache para estimarLinhas() usar
+    if (largNormal > 0) folhaLarguraCache = largNormal;
+    if (indentPx > 0) folhaIndentCache = indentPx;
+
+    folhaPapel.innerHTML = '';
+
+    // ---- Quebrar texto com medição precisa de pixels ----
+    const linhasTexto = quebrarEmLinhas(texto, tamanho, folhaLarguraCache, folhaIndentCache);
 
     // Gerar as 30 linhas (ou mais se ultrapassar)
     const totalLinhas = Math.max(MAX_LINHAS, linhasTexto.length);
@@ -594,9 +752,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       folhaLinhasUsd.style.color = '';
     }
-
-    folhaOverlay.hidden = false;
-    document.body.style.overflow = 'hidden';
   }
 
   function fecharFolha() {

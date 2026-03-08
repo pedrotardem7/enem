@@ -635,6 +635,33 @@ details summary:hover {
   background: rgba(239, 68, 68, .25);
 }
 
+/* Exportar / Importar */
+.btn-row-arquivo {
+  margin-top: .5rem;
+}
+
+.btn-export {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff;
+}
+
+.btn-export:hover {
+  background: linear-gradient(135deg, #047857, #059669);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, .3);
+}
+
+.btn-import {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  color: #fff;
+}
+
+.btn-import:hover {
+  background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, .3);
+}
+
 /* ===== REDAÇÃO OUTPUT ===== */
 .redacao-output {
   background: var(--bg);
