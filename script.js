@@ -34,6 +34,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const redacaoTexto   = document.getElementById('redacao-texto');
   const toast          = document.getElementById('toast');
 
+  // ---------- DICAS CONTEXTUAIS (botões ?) ----------
+
+  document.querySelectorAll('.btn-dica').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dicaId = 'dica-' + btn.dataset.dica;
+      const dicaEl = document.getElementById(dicaId);
+      if (!dicaEl) return;
+
+      const estaVisivel = !dicaEl.hidden;
+
+      // Fecha todas as outras dicas abertas
+      document.querySelectorAll('.dica-contextual').forEach(d => { d.hidden = true; });
+      document.querySelectorAll('.btn-dica').forEach(b => { b.classList.remove('active'); });
+
+      // Toggle da dica clicada
+      if (!estaVisivel) {
+        dicaEl.hidden = false;
+        btn.classList.add('active');
+      }
+    });
+  });
+
   // ---------- HELPERS ----------
 
   /** Retorna todo o texto da redação concatenado */

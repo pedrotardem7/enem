@@ -8,19 +8,19 @@
 }
 
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface-hover: #222633;
-  --border: #2a2e3d;
-  --text: #e4e4e7;
-  --text-muted: #9ca3af;
-  --accent: #6366f1;
-  --accent-hover: #818cf8;
+  --bg: #110b10;
+  --surface: #1c1520;
+  --surface-hover: #271e2b;
+  --border: #3a2a3d;
+  --text: #e8e0e8;
+  --text-muted: #ab94ab;
+  --accent: #db2777;
+  --accent-hover: #f472b6;
   --success: #22c55e;
   --warning: #f59e0b;
   --danger: #ef4444;
   --radius: 12px;
-  --shadow: 0 4px 24px rgba(0, 0, 0, .4);
+  --shadow: 0 4px 24px rgba(0, 0, 0, .5);
 }
 
 html {
@@ -44,7 +44,7 @@ header {
 header h1 {
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  background: linear-gradient(135deg, var(--accent), #f9a8d4);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -113,7 +113,7 @@ input[type="text"]:focus,
 textarea:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, .2);
+  box-shadow: 0 0 0 3px rgba(219, 39, 119, .25);
 }
 
 textarea::placeholder,
@@ -125,11 +125,79 @@ input::placeholder {
 .dica-box {
   margin-top: 1rem;
   padding: .7rem 1rem;
-  background: rgba(99, 102, 241, .08);
+  background: rgba(219, 39, 119, .08);
   border-left: 3px solid var(--accent);
   border-radius: 0 8px 8px 0;
   font-size: .85rem;
   color: var(--text-muted);
+}
+
+/* ===== LABEL ROW + DICAS CONTEXTUAIS ===== */
+.label-row {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.label-row label {
+  margin: .8rem 0 .3rem;
+}
+
+.btn-dica {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-size: .75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all .2s;
+  margin-top: .4rem;
+  font-family: inherit;
+}
+
+.btn-dica:hover,
+.btn-dica.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.dica-contextual {
+  padding: .7rem 1rem;
+  background: rgba(219, 39, 119, .06);
+  border: 1px solid rgba(219, 39, 119, .2);
+  border-radius: 8px;
+  font-size: .82rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin-bottom: .3rem;
+  animation: dicaSlide .25s ease;
+}
+
+.dica-contextual strong {
+  color: var(--accent-hover);
+}
+
+.dica-contextual em {
+  color: var(--text);
+  font-style: italic;
+}
+
+@keyframes dicaSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ===== STATS ===== */
@@ -297,7 +365,7 @@ details summary:hover {
 .tag:hover {
   border-color: var(--accent);
   color: var(--accent-hover);
-  background: rgba(99, 102, 241, .08);
+  background: rgba(219, 39, 119, .08);
 }
 
 .tag.copied {
