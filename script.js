@@ -21,9 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     concDetalhamento: document.getElementById('conc-detalhamento'),
   };
 
-  const statPalavras   = document.getElementById('stat-palavras');
-  const statLinhas     = document.getElementById('stat-linhas');
-  const statCaracteres = document.getElementById('stat-caracteres');
+  // estatísticas removidas; só usamos o contador na folha
   const avisosBox      = document.getElementById('avisos');
   const checklistBar   = document.getElementById('checklist-bar');
   const checklistCount = document.getElementById('checklist-count');
@@ -166,18 +164,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /**
    * Fontes que correspondem EXATAMENTE ao CSS da .folha-linha-texto.
-   * .78rem, .92rem, 1.1rem convertidos para px (assumindo 16px root).
+   * 3.2mm, 3.8mm, 4.5mm convertidos para px (1mm ≈ 3.7795px).
    */
   const FOLHA_FONTS = {
-    small:  '12.48px "Segoe Script", "Comic Sans MS", "Caveat", cursive',
-    medium: '14.72px "Segoe Script", "Comic Sans MS", "Caveat", cursive',
-    large:  '17.6px "Segoe Script", "Comic Sans MS", "Caveat", cursive',
+    small:  '12.09px "Segoe Script", "Comic Sans MS", "Caveat", cursive',
+    medium: '14.36px "Segoe Script", "Comic Sans MS", "Caveat", cursive',
+    large:  '17.01px "Segoe Script", "Comic Sans MS", "Caveat", cursive',
   };
 
-  /** Largura estimada da área de texto em px (atualizada ao abrir folha) */
-  let folhaLarguraCache = 0;
-  /** Largura da indentação de parágrafo em px (atualizada ao abrir folha) */
-  let folhaIndentCache = 0;
+  /**
+   * Largura fixa da área de texto baseada na folha ENEM real.
+   * Folha = 17cm, padding esquerdo = 2cm, padding direito = 0.5cm.
+   * Área de texto = 17 - 2 - 0.5 = 14.5cm.
+   * 1cm ≈ 37.795px → 14.5cm ≈ 548px.
+   */
+  const FOLHA_LARGURA_TEXTO_PX = 14.5 * 37.795;
+  const FOLHA_INDENT_PX = 2 * 37.795; // 2cm de indentação
+
+  /** Largura medida do DOM (atualizada ao abrir folha, fallback = calculada) */
+  let folhaLarguraCache = FOLHA_LARGURA_TEXTO_PX;
+  let folhaIndentCache = FOLHA_INDENT_PX;
 
   /** Mede largura de uma string usando a mesma fonte do folha */
   function medirTexto(str, font) {
@@ -191,8 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function quebrarEmLinhas(texto, fonteKey, largura, indent) {
     const font = FOLHA_FONTS[fonteKey] || FOLHA_FONTS.medium;
-    const larg = (largura || folhaLarguraCache || 580) * 0.98; // 2% margem segurança
-    const indentPx = indent || folhaIndentCache || 32;
+    const larg = largura || folhaLarguraCache;
+    const indentPx = indent || folhaIndentCache;
 
     const textoNorm = texto.replace(/\r\n?/g, '\n');
     const paragrafos = textoNorm.split('\n');
@@ -212,9 +218,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const limite = primeiraDoParag ? (larg - indentPx) : larg;
 
         if (largTeste > limite && linhaAtual) {
-          linhas.push({ texto: linhaAtual, inicioParag: primeiraDoParag });
-          primeiraDoParag = false;
-          linhaAtual = palavra;
+          // Se a palavra sozinha é maior que a linha, força quebra dentro da palavra
+          if (medirTexto(palavra, font) > limite) {
+            // Quebra a palavra em pedaços que caibam na linha
+            let resto = palavra;
+            while (resto.length > 0) {
+              let i = 1;
+              while (i <= resto.length && medirTexto(resto.slice(0, i), font) <= limite) i++;
+              i--;
+              if (i === 0) i = 1; // nunca travar
+              linhas.push({ texto: resto.slice(0, i), inicioParag: primeiraDoParag });
+              primeiraDoParag = false;
+              resto = resto.slice(i);
+            }
+            linhaAtual = '';
+          } else {
+            linhas.push({ texto: linhaAtual, inicioParag: primeiraDoParag });
+            primeiraDoParag = false;
+            linhaAtual = palavra;
+          }
         } else {
           linhaAtual = teste;
         }
@@ -300,34 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---------- ATUALIZAR ESTATÍSTICAS ----------
 
   function atualizarStats() {
-    const texto    = getTextoCompleto();
-    const palavras = contarPalavras(texto);
-    const textoComParag = montarTextoCompleto();
-    const linhas   = estimarLinhas(textoComParag);
-    const chars    = texto.length;
-
-    // Palavras
-    statPalavras.textContent = palavras;
-    statPalavras.className = 'stat-value';
-    if (palavras >= 220 && palavras <= 300) {
-      statPalavras.classList.add('ok');
-    } else if (palavras > 300 || (palavras > 0 && palavras < 220)) {
-      statPalavras.classList.add('warn');
-    }
-
-    // Linhas
-    statLinhas.textContent = linhas;
-    statLinhas.className = 'stat-value';
-    if (linhas > 30) {
-      statLinhas.classList.add('over');
-    } else if (linhas >= 25) {
-      statLinhas.classList.add('warn');
-    } else if (linhas > 0) {
-      statLinhas.classList.add('ok');
-    }
-
-    // Caracteres
-    statCaracteres.textContent = chars;
+    // painel de estatísticas removido; nada a atualizar aqui
   }
 
   // ---------- AVISOS AUTOMÁTICOS ----------
@@ -374,11 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Linhas
-    const textoAvisos = montarTextoCompleto();
-    const linhas = estimarLinhas(textoAvisos);
-    if (linhas > 30) {
-      avisos.push({ tipo: 'error', msg: `❌ Sua redação ultrapassou 30 linhas (≈${linhas} linhas). Reduza o texto!` });
-    }
+    // (Aviso de ultrapassar 30 linhas removido a pedido do usuário)
 
     // Palavras
     const texto  = getTextoCompleto();
@@ -388,14 +379,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Tudo OK
-    if (avisos.length === 0 && palavras > 0) {
-      avisos.push({ tipo: 'ok', msg: '✅ Tudo parece estar em ordem! Revise e gere a versão final.' });
-    }
+    // (Aviso de tudo em ordem removido a pedido do usuário)
 
     // Renderizar
-    avisosBox.innerHTML = avisos
-      .map(a => `<div class="aviso ${a.tipo}">${a.msg}</div>`)
-      .join('');
+    if (avisosBox) {
+      avisosBox.innerHTML = avisos
+        .map(a => `<div class="aviso ${a.tipo}">${a.msg}</div>`)
+        .join('');
+    }
   }
 
   // ---------- CHECKLIST ----------
@@ -425,6 +416,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+
+  // ---------- PROGRESSO: EVENTOS E INICIALIZAÇÃO ----------
+  // Chama atualizarProgresso ao digitar em qualquer campo relevante
+  Object.values(campos).forEach(campo => {
+    campo.addEventListener('input', atualizarProgresso);
+  });
+  // Inicializa o progresso ao carregar a página
+  atualizarProgresso();
 
   // ---------- GERAR REDAÇÃO ----------
 
@@ -480,10 +479,14 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCopiar.disabled = true;
     btnFolha.disabled  = true;
 
+    // Remover rascunho salvo
+    localStorage.removeItem('redacao-enem-rascunho');
+
     // Atualizar tudo
     atualizarStats();
     atualizarAvisos();
     atualizarChecklist();
+    atualizarProgresso();
 
     showToast('Tudo limpo!');
   });
@@ -497,6 +500,8 @@ document.addEventListener('DOMContentLoaded', () => {
       atualizarStats();
       atualizarAvisos();
       atualizarProgresso();
+      // habilitar botão de folha se houver texto nos campos
+      btnFolha.disabled = !getTextoCompleto().trim();
     });
   });
 
@@ -618,18 +623,37 @@ document.addEventListener('DOMContentLoaded', () => {
   inputImportar.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    // Informar arquivo selecionado (útil para debug)
+    // Removido: não exibir nome ou caminho do arquivo importado
 
-    // Validar extensão
+    // Validar extensão mínima
     const ext = file.name.split('.').pop().toLowerCase();
     if (ext !== 'json' && ext !== 'sophinha') {
       showToast('Arquivo inválido! Use .sophinha ou .json', 3500);
       return;
     }
 
+    if (file.size === 0) {
+      showToast('Arquivo vazio. Verifique o arquivo selecionado.', 3500);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
-        const dados = JSON.parse(ev.target.result);
+        // remover BOM UTF-8 se presente e garantir string
+        let text = ev.target.result;
+        if (typeof text !== 'string') {
+          try {
+            text = new TextDecoder().decode(text);
+          } catch (decErr) {
+            console.error('Decoding error:', decErr);
+          }
+        }
+        if (!text) throw new Error('Conteúdo do arquivo vazio');
+        text = text.replace(/^\uFEFF/, '');
+
+        const dados = JSON.parse(text);
 
         // Verificar se parece ser um arquivo válido
         const temCampos = Object.keys(campos).some(k => dados[k] !== undefined);
@@ -647,11 +671,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         restaurarDados(dados);
         showToast('Projeto importado com sucesso!');
-      } catch {
-        showToast('Erro ao ler o arquivo! Verifique se é um arquivo válido.', 3500);
+      } catch (err) {
+        console.error('Erro ao importar arquivo:', err);
+        // Mostrar mensagem de erro mais detalhada ao usuário
+        const msg = err && err.message ? err.message : 'Erro ao ler o arquivo! Verifique se é um arquivo válido.';
+        showToast(`Erro ao ler o arquivo: ${msg}`, 5500);
       }
     };
-    reader.readAsText(file);
+    reader.readAsText(file, 'utf-8');
   });
 
   // ---------- INICIALIZAÇÃO ----------
@@ -662,11 +689,34 @@ document.addEventListener('DOMContentLoaded', () => {
   atualizarChecklist();
   atualizarProgresso();
 
+  // Se não existe rascunho salvo, garantir que progresso apareça zerado
+  const hasSavedRascunho = !!localStorage.getItem('redacao-enem-rascunho');
+  if (!hasSavedRascunho) {
+    // limpar checklist visualmente
+    document.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.getElementById('checklist-count').textContent = '0';
+    const bar = document.getElementById('checklist-bar');
+    if (bar) bar.style.width = '0%';
+
+    // limpar indicadores de progresso (steps)
+    document.querySelectorAll('.progresso-step').forEach(s => s.classList.remove('partial', 'done'));
+    document.querySelectorAll('.step-line').forEach(l => l.classList.remove('partial', 'done'));
+  }
+
   // ---------- MODO FOLHA DE REDAÇÃO ----------
+
+  // Gerar caixinhas nos campos da folha
+  document.querySelectorAll('.folha-caixinhas').forEach(container => {
+    const qtd = parseInt(container.dataset.qtd) || 10;
+    for (let i = 0; i < qtd; i++) {
+      const box = document.createElement('div');
+      box.className = 'folha-caixinha';
+      container.appendChild(box);
+    }
+  });
 
   const folhaOverlay   = document.getElementById('folha-overlay');
   const folhaPapel     = document.getElementById('folha-papel');
-  const folhaTemaTexto = document.getElementById('folha-tema-texto');
   const folhaLinhasUsd = document.getElementById('folha-linhas-usadas');
   const btnFecharFolha = document.getElementById('btn-fechar-folha');
   const btnImprimir    = document.getElementById('btn-imprimir');
@@ -674,13 +724,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const MAX_LINHAS = 30;
   const folhaFonte = document.getElementById('folha-fonte');
 
-  function abrirFolha() {
-    const texto = redacaoTexto.textContent;
-    if (!texto) return;
+  // atualizar contador se o usuário trocar o tamanho de fonte com a folha aberta
+  folhaFonte.addEventListener('change', () => {
+    if (!folhaOverlay.hidden) {
+      atualizarContadorFolha();
+    }
+  });
 
-    // Tema
-    const temaVal = document.getElementById('tema').value.trim();
-    folhaTemaTexto.textContent = temaVal || '(sem tema definido)';
+  function abrirFolha() {
+    // se não houver texto já gerado, monta diretamente a partir dos campos
+    let texto = redacaoTexto.textContent;
+    if (!texto.trim()) {
+      texto = montarTextoCompleto();
+    }
+    if (!texto) {
+      showToast('Não há texto para abrir na folha.');
+      return;
+    }
 
     // Tamanho da fonte
     const tamanho = folhaFonte.value;
@@ -709,8 +769,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const largIndent = tmpIndent.querySelector('.folha-linha-texto').clientWidth;
     const indentPx = Math.max(0, largNormal - largIndent);
 
+    // Descontar 2px da borda da caixa para evitar corte de letras
+    const larguraAjustada = largNormal > 2 ? largNormal - 2 : largNormal;
+
     // Guardar no cache para estimarLinhas() usar
-    if (largNormal > 0) folhaLarguraCache = largNormal;
+    if (largNormal > 0) folhaLarguraCache = larguraAjustada;
     if (indentPx > 0) folhaIndentCache = indentPx;
 
     folhaPapel.innerHTML = '';
@@ -725,26 +788,24 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < totalLinhas; i++) {
       const div = document.createElement('div');
       div.className = 'folha-linha';
-
       if (i >= MAX_LINHAS) div.classList.add('excedente');
-
       const item = linhasTexto[i];
-
       if (item) {
         if (item.inicioParag) div.classList.add('paragrafo-inicio');
       } else {
         div.classList.add('vazia');
       }
-
+      // Renderizar UMA caixa preta por linha
       div.innerHTML = `
-        <span class="folha-linha-num">${String(i + 1).padStart(2, '0')}</span>
-        <span class="folha-linha-texto">${item ? escapeHTML(item.texto) : '&nbsp;'}</span>
+        <span class=\"folha-linha-num\">${String(i + 1).padStart(2, '0')}</span>
+        <span class=\"folha-linha-caixa\"><span class=\"folha-linha-texto\">${item ? escapeHTML(item.texto) : '&nbsp;'}</span></span>
       `;
-
+      // Garante que linhas vazias também tenham borda
+      if (!item) div.classList.add('vazia');
       folhaPapel.appendChild(div);
     }
 
-    // Contador
+    // Contador (também usado por atualizarContadorFolha)
     const usadas = linhasTexto.length;
     folhaLinhasUsd.textContent = usadas;
     if (usadas > MAX_LINHAS) {
@@ -752,6 +813,17 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       folhaLinhasUsd.style.color = '';
     }
+  }
+
+  function atualizarContadorFolha() {
+    const texto = redacaoTexto.textContent;
+    if (!texto) return;
+    // reusa cálculo de quebra, mas só para contar
+    const tamanho = folhaFonte.value;
+    const linhasTexto = quebrarEmLinhas(texto, tamanho, folhaLarguraCache, folhaIndentCache);
+    const usadas = linhasTexto.length;
+    folhaLinhasUsd.textContent = usadas;
+    folhaLinhasUsd.style.color = usadas > MAX_LINHAS ? 'var(--danger)' : '';
   }
 
   function fecharFolha() {
@@ -787,4 +859,5 @@ document.addEventListener('DOMContentLoaded', () => {
   btnImprimir.addEventListener('click', () => {
     window.print();
   });
+  
 });

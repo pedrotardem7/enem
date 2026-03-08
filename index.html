@@ -13,6 +13,7 @@
     <p class="subtitle">Monte sua redação passo a passo seguindo o modelo oficial</p>
   </header>
 
+
   <!-- ========== PROGRESSO POR SEÇÃO ========== -->
   <nav id="progresso-nav">
     <div class="progresso-container">
@@ -52,6 +53,7 @@
       </div>
       <input type="text" id="tema" placeholder="Ex: Os desafios da saúde mental no Brasil contemporâneo">
     </section>
+
 
     <!-- ========== INTRODUÇÃO ========== -->
     <section class="card" id="card-intro">
@@ -205,26 +207,9 @@
       <textarea id="conc-detalhamento" rows="2" placeholder="Ex: garantindo acompanhamento psicológico gratuito pelo SUS"></textarea>
     </section>
 
-    <!-- ========== CONTADORES & AVISOS ========== -->
-    <section class="card" id="card-stats">
-      <h2>📊 Estatísticas</h2>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <span class="stat-label">Palavras</span>
-          <span class="stat-value" id="stat-palavras">0</span>
-          <span class="stat-hint">Ideal: 220–300</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Linhas (≈)</span>
-          <span class="stat-value" id="stat-linhas">0</span>
-          <span class="stat-hint">Máximo: 30</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Caracteres</span>
-          <span class="stat-value" id="stat-caracteres">0</span>
-        </div>
-      </div>
-      <div id="avisos" class="avisos-box"></div>
+    <!-- Estatísticas removidas; contador passou a ser exibido apenas na folha -->
+    <section class="card" id="card-stats" style="display:none;">
+      <!-- antigo painel de estatísticas escondido -->
     </section>
 
     <!-- ========== CHECKLIST COMPETÊNCIAS ========== -->
@@ -566,7 +551,7 @@
       <h2>📑 Redação Final</h2>
       <div class="btn-row">
         <button id="btn-gerar" class="btn btn-primary">GERAR REDAÇÃO</button>
-        <button id="btn-folha" class="btn btn-secondary" disabled>📄 MODO FOLHA</button>
+        <button id="btn-folha" class="btn btn-secondary">📄 MODO FOLHA</button>
         <button id="btn-copiar" class="btn btn-secondary" disabled>COPIAR TEXTO</button>
         <button id="btn-limpar" class="btn btn-danger">LIMPAR TUDO</button>
       </div>
@@ -580,29 +565,57 @@
   <!-- ========== MODAL FOLHA DE REDAÇÃO ========== -->
   <div id="folha-overlay" class="folha-overlay" hidden>
     <div class="folha-modal">
-      <div class="folha-header">
-        <h2>📄 Folha de Redação — Simulação ENEM</h2>
-        <button id="btn-fechar-folha" class="btn-fechar">&times;</button>
+
+      
+
+      <!-- ===== FOLHA OFICIAL ===== -->
+      <div class="folha-pagina">
+
+        <!-- Barra de ferramentas (sobreposta à página) -->
+        <div class="folha-toolbar">
+          <div class="folha-toolbar-left">
+            <label for="folha-fonte">Letra:</label>
+            <select id="folha-fonte">
+              <option value="small">Pequena</option>
+              <option value="medium" selected>Média (Padrão)</option>
+              <option value="large">Grande</option>
+            </select>
+          </div>
+          <div class="folha-toolbar-right">
+            <span class="folha-contador"><span id="folha-linhas-usadas">0</span>/30 linhas</span>
+            <button id="btn-imprimir" class="btn btn-primary btn-sm">🖨️ Imprimir</button>
+            <button id="btn-fechar-folha" class="btn-fechar">&times;</button>
+          </div>
+        </div>
+
+        <!-- BLOCO 1: Título + Código de barras -->
+        <div class="folha-bloco folha-bloco-titulo">
+          <div class="folha-titulo-left">
+            <h2>FOLHA DE REDAÇÃO</h2>
+          </div>
+        </div>
+
+        <!-- BLOCO 2: (removido nome, inscrição, cpf, data) -->
+        <!-- Apenas o título permanece acima da área de instruções/escrita -->
+
+
+        <!-- ÁREA DE ESCRITA -->
+        <div class="folha-papel" id="folha-papel">
+          <!-- 30 linhas serão geradas pelo JS -->
+        </div>
+
+        <!-- RODAPÉ (ajustado para centralizado e fiel ao modelo oficial) -->
+        <div class="folha-rodape-oficial" style="display: flex; justify-content: center; align-items: center; font-size: 11px; font-family: Arial, sans-serif; border-top: 2px solid #000; margin-top: 8mm; padding-top: 2mm;">
+          <span class="folha-logo-enem" style="font-weight: bold; letter-spacing: 1px;">■ enem</span>
+          <span style="margin: 0 12px;">|</span>
+          <span class="folha-logo-inep" style="font-weight: bold; letter-spacing: 1px;">INEP</span>
+          <span style="margin: 0 12px;">|</span>
+          <span class="folha-logo-mec" style="font-weight: bold; letter-spacing: 1px;">MINISTÉRIO DA EDUCAÇÃO</span>
+        </div>
+
       </div>
-      <div class="folha-tema">
-        <span>TEMA:</span>
-        <span id="folha-tema-texto"></span>
-      </div>
-      <div class="folha-opcoes">
-        <label for="folha-fonte">Tamanho da letra:</label>
-        <select id="folha-fonte">
-          <option value="small">Pequena (mais texto por linha)</option>
-          <option value="medium" selected>Média (padrão)</option>
-          <option value="large">Grande (menos texto por linha)</option>
-        </select>
-      </div>
-      <div class="folha-papel" id="folha-papel">
-        <!-- 30 linhas serão geradas pelo JS -->
-      </div>
-      <div class="folha-footer">
-        <span id="folha-linhas-usadas">0</span>/30 linhas utilizadas
-        <button id="btn-imprimir" class="btn btn-primary btn-sm">🖨️ IMPRIMIR</button>
-      </div>
+      <!-- ===== FIM FOLHA OFICIAL ===== -->
+
     </div>
   </div>
 

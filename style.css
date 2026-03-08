@@ -173,7 +173,7 @@ main {
   padding: 0 1rem 3rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.7rem;
 }
 
 .card {
@@ -718,12 +718,12 @@ footer {
 .folha-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, .75);
+  background: rgba(0, 0, 0, .8);
   z-index: 2000;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 2rem 1rem;
+  padding: 1rem;
   overflow-y: auto;
   animation: fadeIn .25s ease;
 }
@@ -735,35 +735,72 @@ footer {
 
 .folha-modal {
   width: 100%;
-  max-width: 700px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, .6);
-  overflow: hidden;
+  max-width: 100%; /* permitir folha expandir se houver espaço */
+  overflow: visible;
+  /* centre and allow horizontal scrolling if viewport narrower than folha */
+  display: flex;
+  justify-content: center;
 }
 
-.folha-header {
+.folha-pagina {
+  position: relative; /* já existente; reforçar para posicionamento absoluto da toolbar */
+}
+
+/* ===== TOOLBAR (fora da folha, não imprime) ===== */
+.folha-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border);
+  padding: .45rem .6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2100;
+  width: auto;
+  box-shadow: var(--shadow);
 }
 
-.folha-header h2 {
-  font-size: 1.1rem;
-  color: var(--accent-hover);
-  margin: 0;
+
+.folha-toolbar-left,
+.folha-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.folha-toolbar label {
+  font-size: .8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.folha-toolbar select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: .3rem .5rem;
+  font-size: .78rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.folha-contador {
+  font-size: .8rem;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 .btn-fechar {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   cursor: pointer;
-  padding: 0 .3rem;
+  padding: 0 .2rem;
   line-height: 1;
   transition: color .2s;
 }
@@ -772,211 +809,422 @@ footer {
   color: var(--danger);
 }
 
-.folha-tema {
-  padding: .8rem 1.5rem;
-  background: var(--bg);
-  font-size: .85rem;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border);
-}
-
-.folha-tema span:first-child {
-  font-weight: 700;
-  color: var(--accent);
-  margin-right: .5rem;
-}
-
-/* Papel com linhas */
-.folha-papel {
-  background: #fef9ef;
-  padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+/* ===== FOLHA (PÁGINA OFICIAL) ===== */
+.folha-pagina {
+  background: #fff;
+  width: 21cm;
+  max-width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 4px 30px rgba(0,0,0,.5);
+  border: 2px solid #000;
   position: relative;
-  min-height: 300px;
-  overflow-x: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---------- BLOCOS (caixas separadas) ---------- */
+.folha-bloco {
+  border-bottom: 2px solid #000;
+  padding: 2.5mm 4mm;
+}
+
+/* BLOCO 1: Título */
+.folha-bloco-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3mm 4mm;
+}
+
+.folha-titulo-left h2 {
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 7mm;
+  font-weight: 900;
+  color: #000;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.folha-subtitulo {
+  font-size: 2.3mm;
+  color: #444;
+  font-weight: 700;
+  font-style: italic;
+  margin: 0.5mm 0 0;
+  text-transform: uppercase;
+}
+
+.folha-titulo-right {
+  display: flex;
+  align-items: center;
+}
+
+.folha-barcode {
+  width: 4.5cm;
+  height: 1cm;
+  background: repeating-linear-gradient(
+    90deg,
+    #000 0px, #000 1px,
+    #fff 1px, #fff 2px,
+    #000 2px, #000 4px,
+    #fff 4px, #fff 5px,
+    #000 5px, #000 6px,
+    #fff 6px, #fff 8px
+  );
+}
+
+/* BLOCO 2: Nome */
+.folha-bloco-nome {
+  padding: 1.5mm 4mm 2mm;
+}
+
+.folha-field-label {
+  display: block;
+  font-size: 2mm;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 1mm;
+}
+
+.folha-field-box {
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+  background: #ffe0e6;
+  border: 1.5px solid #d44;
+  padding: 1mm 2mm;
+}
+
+.folha-field-seta {
+  font-size: 2.2mm;
+  font-weight: 700;
+  color: #c00;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.folha-caixinhas {
+  display: flex;
+  gap: 0;
+  flex: 1;
+}
+
+.folha-caixinha {
+  width: 5mm;
+  height: 5mm;
+  border: 1px solid #c00;
+  border-right: none;
+  background: #fff;
+}
+
+.folha-caixinha:last-child {
+  border-right: 1px solid #c00;
+}
+
+/* BLOCO 3: Dados (Nº Inscrição + CPF + Data) */
+.folha-bloco-dados {
+  display: flex;
+  gap: 0;
+  padding: 0;
+}
+
+.folha-dados-col {
+  flex: 1;
+  padding: 1.5mm 4mm 2mm;
+  border-right: 2px solid #000;
+}
+
+.folha-dados-col:last-child {
+  border-right: none;
+}
+
+.folha-field-box-sm {
+  height: 5mm;
+  border-bottom: 1px solid #999;
+}
+
+/* BLOCO 4: Instruções */
+.folha-bloco-instrucoes {
+  padding: 2mm 4mm 2.5mm;
+  background: #fff;
+}
+
+.folha-instrucoes-box {
+  background: #fff0f0;
+  border: 2px solid #d44;
+  padding: 2mm 3mm;
+}
+
+.folha-instrucoes-titulo {
+  font-size: 2.5mm;
+  font-weight: 900;
+  color: #c00;
+  margin: 0 0 1mm;
+  text-transform: uppercase;
+}
+
+.folha-instrucoes-box ol {
+  margin: 0;
+  padding-left: 4mm;
+  font-size: 2mm;
+  color: #333;
+  line-height: 1.6;
+}
+
+.folha-instrucoes-box li {
+  margin-bottom: 0.3mm;
+}
+
+/* ---------- ÁREA DE ESCRITA (PAPEL) ---------- */
+.folha-papel {
+  /* comportamento de rolagem e ocultação da barra */
+  overflow-y: auto;
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;    /* Firefox */
+  /* overflow removido para mostrar todas as linhas no visualizador */
+
+  background: #fff;
+  /* Área de escrita ENEM: 17cm x 19cm */
+  width: 22cm; /* aumentada para garantir área útil maior que 17cm e evitar barra de rolagem para fora */
+  max-width: 100%; /* não ultrapassar modal no modo tela */
+  height: 19cm;
+  padding: 0 0.8cm 0 2cm; /* margem direita levemente reduzida para aumentar área de escrita */
+  box-sizing: border-box;
+  margin: 0 auto;
+  position: relative;
+  border-bottom: none;
+}
+
+.folha-papel::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 /* Margem esquerda vermelha */
 .folha-papel::before {
-  content: '';
-  position: absolute;
-  left: 3rem;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: #e8a0a0;
+  content: none;
 }
 
 .folha-linha {
   display: flex;
   align-items: baseline;
-  min-height: 28px;
-  border-bottom: 1px solid #d4c9b8;
+  height: calc(19cm / 30);
+  /* border-bottom removed to avoid linhas duplas */
   position: relative;
+}
+
+.folha-linha:last-child {
+  border-bottom: none;
 }
 
 .folha-linha-num {
   position: absolute;
-  left: -2.5rem;
-  width: 2rem;
-  text-align: right;
-  font-size: .65rem;
-  color: #b0a090;
-  font-family: 'Courier New', monospace;
+  left: -1.5cm;
+  width: 1.2cm;
+  height: calc(19cm / 30 - 2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 2.8mm;
+  color: #222;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
   user-select: none;
+  line-height: 1;
+  border: 1.5px solid #d1d1d1;
+  border-radius: 4px;
+  background: #fff;
+  box-sizing: border-box;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+
+.folha-linha-caixa {
+  flex: 1;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  /* aumentar ainda mais a altura para evitar corte do texto pela borda */
+  height: calc(19cm / 30 + 6px);
+  margin-left: 4px;
+  background: #fff;
+  box-sizing: border-box;
+  width: 100%; /* ocupar toda a largura disponível dentro do container */
+  padding: 0 12px 0 0; /* respiro maior à direita para evitar corte visual */
+  overflow: hidden;
 }
 
 .folha-linha-texto {
   flex: 1;
   font-family: 'Segoe Script', 'Comic Sans MS', 'Caveat', cursive;
-  font-size: .92rem;
+  font-size: 3.8mm;
   color: #1a1a2e;
-  line-height: 1.6;
-  padding: 2px 0;
-  min-height: 24px;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-
-/* Tamanhos de fonte da folha */
-.folha-papel.fonte-small .folha-linha-texto {
-  font-size: .78rem;
-}
-
-.folha-papel.fonte-small .folha-linha {
-  min-height: 24px;
-}
-
-.folha-papel.fonte-medium .folha-linha-texto {
-  font-size: .92rem;
-}
-
-.folha-papel.fonte-medium .folha-linha {
-  min-height: 28px;
-}
-
-.folha-papel.fonte-large .folha-linha-texto {
-  font-size: 1.1rem;
-}
-
-.folha-papel.fonte-large .folha-linha {
-  min-height: 34px;
-}
-
-/* Opções da folha */
-.folha-opcoes {
-  padding: .6rem 1.5rem;
+  line-height: 1.2;
+  height: auto;
   display: flex;
   align-items: center;
-  gap: .8rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  /* pequeno espaçamento vertical para não encostar na borda */
+  padding: 2px 10px 2px 0; /* adicionar padding-right para evitar corte de letras */
+  white-space: nowrap; /* impedir quebra automática */
+  overflow: hidden;
+  text-overflow: clip;
+  box-sizing: border-box;
 }
 
-.folha-opcoes label {
-  font-size: .8rem;
-  color: var(--text-muted);
-  margin: 0;
-  white-space: nowrap;
+/* Tamanhos de fonte */
+.folha-papel.fonte-small .folha-linha-texto {
+  font-size: 3.1mm;
 }
-
-.folha-opcoes select {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  padding: .35rem .6rem;
-  font-size: .8rem;
-  font-family: inherit;
-  cursor: pointer;
+.folha-papel.fonte-medium .folha-linha-texto {
+  font-size: 3.6mm;
+}
+.folha-papel.fonte-large .folha-linha-texto {
+  font-size: 4.3mm;
 }
 
 .folha-linha.vazia .folha-linha-texto {
   color: transparent;
 }
-
-.folha-linha.paragrafo-inicio .folha-linha-texto {
-  padding-left: 2rem;
+.folha-linha.vazia .folha-linha-caixa {
+  border: 1px solid #000;
+  background: #fff;
 }
 
-.folha-footer {
-  padding: .8rem 1.5rem;
-  border-top: 1px solid var(--border);
+.folha-linha.paragrafo-inicio .folha-linha-texto {
+  padding-left: 2cm;
+}
+
+/* Linhas excedentes (>30) */
+.folha-linha.excedente {
+  background: none;
+}
+.folha-linha.excedente .folha-linha-num {
+  color: #d44;
+}
+
+/* Numeração: só múltiplos de 5 são totalmente visíveis na folha real */
+.folha-linha-num {
+  opacity: 1;
+}
+
+/* ---------- RODAPÉ OFICIAL ---------- */
+.folha-rodape-oficial {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: .85rem;
-  color: var(--text-muted);
+  padding: 3mm 0.8cm;
+  background: #fff;
+  border-top: none;
+}
+
+.folha-rodape-left {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+}
+
+.folha-logo-enem {
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 4mm;
+  font-weight: 900;
+  color: #000;
+  letter-spacing: -0.3px;
+}
+
+.folha-logo-inep {
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 3mm;
+  font-weight: 900;
+  color: #000;
+  border-left: 1px solid #999;
+  padding-left: 3mm;
+}
+
+.folha-logo-mec {
+  font-family: Arial, sans-serif;
+  font-size: 2mm;
+  color: #555;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.folha-rodape-right {
+  display: flex;
+  align-items: center;
+}
+
+.folha-barcode-sm {
+  width: 2.5cm;
+  height: 0.6cm;
+  background: repeating-linear-gradient(
+    90deg,
+    #000 0px, #000 1px,
+    #fff 1px, #fff 2px,
+    #000 2px, #000 3px,
+    #fff 3px, #fff 5px
+  );
+  border-radius: 1px;
 }
 
 .btn-sm {
-  padding: .45rem 1rem;
-  font-size: .82rem;
-}
-
-/* Linhas que ultrapassam 30 */
-.folha-linha.excedente {
-  background: rgba(239, 68, 68, .1);
-}
-
-.folha-linha.excedente .folha-linha-num {
-  color: var(--danger);
-  font-weight: 700;
+  padding: .4rem .9rem;
+  font-size: .8rem;
 }
 
 /* ===== PRINT ===== */
 @media print {
-  /* Esconder tudo exceto a folha */
-  body * {
-    visibility: hidden;
+  /* Esconder tudo da página exceto a folha */
+  body > *:not(.folha-overlay) {
+    display: none !important;
   }
 
   .folha-overlay,
   .folha-overlay * {
-    visibility: visible;
+    visibility: visible !important;
   }
 
-  /* Reset de layout para impressão fluir sem corte */
   html, body {
+    width: auto !important;
     height: auto !important;
     overflow: visible !important;
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
   }
 
   .folha-overlay {
-    position: absolute;
-    inset: 0;
-    background: #fff;
-    padding: 0;
+    position: static !important;
+    display: block !important;
+    background: #fff !important;
+    padding: 0 !important;
     overflow: visible !important;
     height: auto !important;
+    width: auto !important;
   }
 
   .folha-modal {
-    box-shadow: none;
-    border: none;
-    max-width: 100%;
+    max-width: 100% !important;
     overflow: visible !important;
-    height: auto !important;
-    page-break-inside: auto;
   }
 
-  .folha-header,
-  .folha-footer {
-    border-color: #ccc;
-  }
-
-  .btn-fechar,
-  #btn-imprimir,
-  .folha-opcoes {
+  /* Esconder toolbar */
+  .folha-toolbar {
     display: none !important;
   }
 
+  .folha-pagina {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 21cm !important;
+    overflow: visible !important;
+    page-break-inside: auto;
+  }
+
   .folha-papel {
-    padding-top: .5rem;
     overflow: visible !important;
     height: auto !important;
-    min-height: 0 !important;
     page-break-inside: auto;
   }
 
@@ -984,7 +1232,7 @@ footer {
     page-break-inside: avoid;
   }
 
-  .folha-footer {
+  .folha-rodape-oficial {
     page-break-before: avoid;
   }
 }
@@ -1030,4 +1278,9 @@ footer {
   .step-line {
     min-width: 12px;
   }
+}
+
+/* Ocultar mini toolbar na impressão */
+@media print {
+  /* mini toolbar removida */
 }
