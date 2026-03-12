@@ -96,6 +96,15 @@
       <textarea id="d1-argumento" rows="2" placeholder="Apresente seu primeiro argumento que defende a tese"></textarea>
 
       <div class="label-row">
+        <label for="d1-repertorio">Repertório sociocultural:</label>
+        <button class="btn-dica" data-dica="d1-repertorio">?</button>
+      </div>
+      <div class="dica-contextual" id="dica-d1-repertorio" hidden>
+        Use um repertório <strong>legitimado</strong>: dados do IBGE, citações de filósofos (Bauman, Foucault, Hannah Arendt…), referências a filmes, livros, leis ou fatos históricos. Evite senso comum e achismos.
+      </div>
+      <textarea id="d1-repertorio" rows="2" placeholder="Dados, citações, filmes, livros, fatos histórico…"></textarea>
+
+      <div class="label-row">
         <label for="d1-explicacao">Explicação:</label>
         <button class="btn-dica" data-dica="d1-explicacao">?</button>
       </div>
@@ -112,15 +121,6 @@
         Exemplifique o argumento com fatos concretos ou mostre as consequências. Use expressões como <em>"Por exemplo,"</em> ou <em>"Como resultado,"</em>.
       </div>
       <textarea id="d1-exemplificacao" rows="2" placeholder="Exemplo concreto ou consequência do argumento"></textarea>
-
-      <div class="label-row">
-        <label for="d1-repertorio">Repertório sociocultural:</label>
-        <button class="btn-dica" data-dica="d1-repertorio">?</button>
-      </div>
-      <div class="dica-contextual" id="dica-d1-repertorio" hidden>
-        Use um repertório <strong>legitimado</strong>: dados do IBGE, citações de filósofos (Bauman, Foucault, Hannah Arendt…), referências a filmes, livros, leis ou fatos históricos. Evite senso comum e achismos.
-      </div>
-      <textarea id="d1-repertorio" rows="2" placeholder="Dados, citações, filmes, livros, fatos históricos…"></textarea>
 
       <div class="label-row">
         <label for="d1-desfecho">Frase de desfecho:</label>
@@ -146,6 +146,15 @@
       <textarea id="d2-argumento" rows="2" placeholder="Apresente seu segundo argumento"></textarea>
 
       <div class="label-row">
+        <label for="d2-repertorio">Repertório sociocultural:</label>
+        <button class="btn-dica" data-dica="d2-repertorio">?</button>
+      </div>
+      <div class="dica-contextual" id="dica-d2-repertorio" hidden>
+        Use um repertório <strong>diferente</strong> do D1. Se usou um filósofo antes, tente agora um dado estatístico, uma lei ou um filme. Variedade de repertório mostra amplitude de conhecimento.
+      </div>
+      <textarea id="d2-repertorio" rows="2" placeholder="Dados, citações, filmes, livros, fatos históricos…"></textarea>
+
+      <div class="label-row">
         <label for="d2-explicacao">Explicação:</label>
         <button class="btn-dica" data-dica="d2-explicacao">?</button>
       </div>
@@ -164,15 +173,6 @@
       <textarea id="d2-exemplificacao" rows="2" placeholder="Exemplo concreto ou consequência do argumento"></textarea>
 
       <div class="label-row">
-        <label for="d2-repertorio">Repertório sociocultural:</label>
-        <button class="btn-dica" data-dica="d2-repertorio">?</button>
-      </div>
-      <div class="dica-contextual" id="dica-d2-repertorio" hidden>
-        Use um repertório <strong>diferente</strong> do D1. Se usou um filósofo antes, tente agora um dado estatístico, uma lei ou um filme. Variedade de repertório mostra amplitude de conhecimento.
-      </div>
-      <textarea id="d2-repertorio" rows="2" placeholder="Dados, citações, filmes, livros, fatos históricos…"></textarea>
-
-      <div class="label-row">
         <label for="d2-desfecho">Frase de desfecho:</label>
         <button class="btn-dica" data-dica="d2-desfecho">?</button>
       </div>
@@ -187,7 +187,7 @@
       <h2>4️⃣ Conclusão</h2>
 
       <div class="label-row">
-        <label for="conc-retomada">Retomada da tese:</label>
+        <label for="conc-retomada">Retomada do tema:</label>
         <button class="btn-dica" data-dica="conc-retomada">?</button>
       </div>
       <div class="dica-contextual" id="dica-conc-retomada" hidden>
@@ -195,52 +195,81 @@
       </div>
       <textarea id="conc-retomada" rows="2" placeholder="Retome brevemente seu posicionamento"></textarea>
 
-      <h3>📌 Proposta de Intervenção</h3>
+      <h3>📌 1ª Proposta de Intervenção</h3>
 
       <div class="label-row">
-        <label for="conc-agente">Agente (quem vai agir):</label>
-        <button class="btn-dica" data-dica="conc-agente">?</button>
+        <label for="conc-agente1">Agente 1 (quem vai agir):</label>
+        <button class="btn-dica" data-dica="conc-agente1">?</button>
       </div>
-      <div class="dica-contextual" id="dica-conc-agente" hidden>
+      <div class="dica-contextual" id="dica-conc-agente1" hidden>
         O agente é <strong>quem vai executar a ação</strong>. Pode ser: O Governo Federal, O Ministério da Educação, as escolas, a mídia, as ONGs, a família… Seja específico — evite "a sociedade" sozinha.
       </div>
-      <input type="text" id="conc-agente" placeholder="Ex: O Ministério da Saúde">
+      <textarea id="conc-agente1" rows="2" placeholder="Ex: O Ministério da Saúde"></textarea>
 
       <div class="label-row">
-        <label for="conc-acao">Ação (o que será feito):</label>
-        <button class="btn-dica" data-dica="conc-acao">?</button>
+        <label for="conc-acao1">Ação 1 (o que será feito):</label>
+        <button class="btn-dica" data-dica="conc-acao1">?</button>
       </div>
-      <div class="dica-contextual" id="dica-conc-acao" hidden>
+      <div class="dica-contextual" id="dica-conc-acao1" hidden>
         Descreva <strong>o que o agente vai fazer concretamente</strong>. Use verbos de ação: criar, implementar, promover, fiscalizar, investir. Ex: <em>"deve criar campanhas educativas"</em>.
       </div>
-      <textarea id="conc-acao" rows="2" placeholder="Ex: deve criar campanhas de conscientização"></textarea>
+      <textarea id="conc-acao1" rows="2" placeholder="Ex: deve criar campanhas de conscientização"></textarea>
 
       <div class="label-row">
-        <label for="conc-meio">Meio (como será feito):</label>
-        <button class="btn-dica" data-dica="conc-meio">?</button>
+        <label for="conc-meio1">Meio 1 (como será feito):</label>
+        <button class="btn-dica" data-dica="conc-meio1">?</button>
       </div>
-      <div class="dica-contextual" id="dica-conc-meio" hidden>
+      <div class="dica-contextual" id="dica-conc-meio1" hidden>
         Explique <strong>como a ação será executada</strong>. Use expressões como: <em>"por meio de"</em>, <em>"através de"</em>, <em>"mediante"</em>. Ex: <em>"por meio de palestras nas escolas públicas"</em>.
       </div>
-      <textarea id="conc-meio" rows="2" placeholder="Ex: por meio de propagandas em redes sociais e escolas"></textarea>
+      <textarea id="conc-meio1" rows="2" placeholder="Ex: por meio de propagandas em redes sociais e escolas"></textarea>
+
+      <div class="label-row">
+        <label for="conc-detalhamento1">Detalhamento 1 (informação extra):</label>
+        <button class="btn-dica" data-dica="conc-detalhamento1">?</button>
+      </div>
+      <div class="dica-contextual" id="dica-conc-detalhamento1" hidden>
+        O detalhamento é o <strong>5º elemento</strong> que garante nota máxima na Competência 5. Adicione informação extra sobre qualquer parte da proposta. Ex: <em>"garantindo acompanhamento gratuito pelo SUS"</em> ou <em>"com fiscalização trimestral do Ministério Público"</em>.
+      </div>
+      <textarea id="conc-detalhamento1" rows="2" placeholder="Ex: garantindo acompanhamento psicológico gratuito pelo SUS"></textarea>
+
+      <h3>📌 2ª Proposta de Intervenção</h3>
+
+      <div class="label-row">
+        <label for="conc-agente2">Agente 2 (quem vai agir):</label>
+        <button class="btn-dica" data-dica="conc-agente2">?</button>
+      </div>
+      <div class="dica-contextual" id="dica-conc-agente2" hidden>
+        Um segundo agente diferente do primeiro. Pode ser outro órgão, instituição ou setor da sociedade.
+      </div>
+      <textarea id="conc-agente2" rows="2" placeholder="Ex: O Ministério da Educação"></textarea>
+
+      <div class="label-row">
+        <label for="conc-acao2">Ação 2 (o que será feito):</label>
+        <button class="btn-dica" data-dica="conc-acao2">?</button>
+      </div>
+      <div class="dica-contextual" id="dica-conc-acao2" hidden>
+        A ação do segundo agente. Deve complementar a primeira proposta, oferecendo uma perspectiva adicional sobre o problema.
+      </div>
+      <textarea id="conc-acao2" rows="2" placeholder="Ex: deve implementar programas de formação de professores"></textarea>
 
       <div class="label-row">
         <label for="conc-finalidade">Finalidade (para quê):</label>
         <button class="btn-dica" data-dica="conc-finalidade">?</button>
       </div>
       <div class="dica-contextual" id="dica-conc-finalidade" hidden>
-        Qual o <strong>objetivo</strong> da ação? Use: <em>"a fim de"</em>, <em>"para que"</em>, <em>"com o intuito de"</em>, <em>"de modo a"</em>. Conecte de volta ao problema do tema.
+        Qual o <strong>objetivo final</strong> de ambas as propostas? Use: <em>"a fim de"</em>, <em>"para que"</em>, <em>"com o intuito de"</em>, <em>"de modo a"</em>. Conecte de volta ao problema do tema.
       </div>
-      <textarea id="conc-finalidade" rows="2" placeholder="Ex: a fim de reduzir o estigma em torno da saúde mental"></textarea>
+      <textarea id="conc-finalidade" rows="2" placeholder="Ex: a fim de reduzir o estigma em torno da saúde mental e garantir acesso equitativo"></textarea>
 
       <div class="label-row">
-        <label for="conc-detalhamento">Detalhamento (informação extra):</label>
-        <button class="btn-dica" data-dica="conc-detalhamento">?</button>
+        <label for="conc-frasedesfecho">Frase de desfecho / Retomada da imagem:</label>
+        <button class="btn-dica" data-dica="conc-frasedesfecho">?</button>
       </div>
-      <div class="dica-contextual" id="dica-conc-detalhamento" hidden>
-        O detalhamento é o <strong>5º elemento</strong> que garante nota máxima na Competência 5. Adicione informação extra sobre qualquer parte da proposta. Ex: <em>"garantindo acompanhamento gratuito pelo SUS"</em> ou <em>"com fiscalização trimestral do Ministério Público"</em>.
+      <div class="dica-contextual" id="dica-conc-frasedesfecho" hidden>
+        Encerre a redação com uma frase poderosa que retome a ideia central ou crie um fechamento impactante. Pode fazer referência a alguma imagem/conceito do início.
       </div>
-      <textarea id="conc-detalhamento" rows="2" placeholder="Ex: garantindo acompanhamento psicológico gratuito pelo SUS"></textarea>
+      <textarea id="conc-frasedesfecho" rows="2" placeholder="Frase final que encerra a redação de forma impactante"></textarea>
     </section>
 
     <!-- Estatísticas removidas; contador passou a ser exibido apenas na folha -->

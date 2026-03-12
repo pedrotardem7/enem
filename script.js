@@ -5,24 +5,27 @@
 document.addEventListener('DOMContentLoaded', () => {
   // ---------- SELETORES ----------
   const campos = {
-    introContexto:    document.getElementById('intro-contexto'),
-    introTese:        document.getElementById('intro-tese'),
-    d1Argumento:      document.getElementById('d1-argumento'),
-    d1Explicacao:     document.getElementById('d1-explicacao'),
-    d1Exemplificacao: document.getElementById('d1-exemplificacao'),
-    d1Repertorio:     document.getElementById('d1-repertorio'),
-    d1Desfecho:       document.getElementById('d1-desfecho'),
-    d2Argumento:      document.getElementById('d2-argumento'),
-    d2Explicacao:     document.getElementById('d2-explicacao'),
-    d2Exemplificacao: document.getElementById('d2-exemplificacao'),
-    d2Repertorio:     document.getElementById('d2-repertorio'),
-    d2Desfecho:       document.getElementById('d2-desfecho'),
-    concRetomada:     document.getElementById('conc-retomada'),
-    concAgente:       document.getElementById('conc-agente'),
-    concAcao:         document.getElementById('conc-acao'),
-    concMeio:         document.getElementById('conc-meio'),
-    concFinalidade:   document.getElementById('conc-finalidade'),
-    concDetalhamento: document.getElementById('conc-detalhamento'),
+    introContexto:      document.getElementById('intro-contexto'),
+    introTese:          document.getElementById('intro-tese'),
+    d1Argumento:        document.getElementById('d1-argumento'),
+    d1Repertorio:       document.getElementById('d1-repertorio'),
+    d1Explicacao:       document.getElementById('d1-explicacao'),
+    d1Exemplificacao:   document.getElementById('d1-exemplificacao'),
+    d1Desfecho:         document.getElementById('d1-desfecho'),
+    d2Argumento:        document.getElementById('d2-argumento'),
+    d2Repertorio:       document.getElementById('d2-repertorio'),
+    d2Explicacao:       document.getElementById('d2-explicacao'),
+    d2Exemplificacao:   document.getElementById('d2-exemplificacao'),
+    d2Desfecho:         document.getElementById('d2-desfecho'),
+    concRetomada:       document.getElementById('conc-retomada'),
+    concAgente1:        document.getElementById('conc-agente1'),
+    concAcao1:          document.getElementById('conc-acao1'),
+    concMeio1:          document.getElementById('conc-meio1'),
+    concDetalhamento1:  document.getElementById('conc-detalhamento1'),
+    concAgente2:        document.getElementById('conc-agente2'),
+    concAcao2:          document.getElementById('conc-acao2'),
+    concFinalidade:     document.getElementById('conc-finalidade'),
+    concFraseDesfecho:  document.getElementById('conc-frasedesfecho'),
   };
 
   // estatísticas removidas; só usamos o contador na folha
@@ -126,21 +129,24 @@ document.addEventListener('DOMContentLoaded', () => {
       .filter(Boolean).join(' ');
     if (intro) partes.push(intro);
 
-    const d1 = [limpar(campos.d1Argumento.value), limpar(campos.d1Explicacao.value), limpar(campos.d1Exemplificacao.value), limpar(campos.d1Repertorio.value), limpar(campos.d1Desfecho.value)]
+    const d1 = [limpar(campos.d1Argumento.value), limpar(campos.d1Repertorio.value), limpar(campos.d1Explicacao.value), limpar(campos.d1Exemplificacao.value), limpar(campos.d1Desfecho.value)]
       .filter(Boolean).join(' ');
     if (d1) partes.push(d1);
 
-    const d2 = [limpar(campos.d2Argumento.value), limpar(campos.d2Explicacao.value), limpar(campos.d2Exemplificacao.value), limpar(campos.d2Repertorio.value), limpar(campos.d2Desfecho.value)]
+    const d2 = [limpar(campos.d2Argumento.value), limpar(campos.d2Repertorio.value), limpar(campos.d2Explicacao.value), limpar(campos.d2Exemplificacao.value), limpar(campos.d2Desfecho.value)]
       .filter(Boolean).join(' ');
     if (d2) partes.push(d2);
 
     const conc = [
       limpar(campos.concRetomada.value),
-      limpar(campos.concAgente.value),
-      limpar(campos.concAcao.value),
-      limpar(campos.concMeio.value),
+      limpar(campos.concAgente1.value),
+      limpar(campos.concAcao1.value),
+      limpar(campos.concMeio1.value),
+      limpar(campos.concDetalhamento1.value),
+      limpar(campos.concAgente2.value),
+      limpar(campos.concAcao2.value),
       limpar(campos.concFinalidade.value),
-      limpar(campos.concDetalhamento.value),
+      limpar(campos.concFraseDesfecho.value),
     ].filter(Boolean).join(' ');
     if (conc) partes.push(conc);
 
@@ -281,15 +287,15 @@ document.addEventListener('DOMContentLoaded', () => {
       step: document.querySelector('.progresso-step[data-secao="intro"]'),
     },
     d1: {
-      campos: [campos.d1Argumento, campos.d1Explicacao, campos.d1Exemplificacao, campos.d1Repertorio, campos.d1Desfecho],
+      campos: [campos.d1Argumento, campos.d1Repertorio, campos.d1Explicacao, campos.d1Exemplificacao, campos.d1Desfecho],
       step: document.querySelector('.progresso-step[data-secao="d1"]'),
     },
     d2: {
-      campos: [campos.d2Argumento, campos.d2Explicacao, campos.d2Exemplificacao, campos.d2Repertorio, campos.d2Desfecho],
+      campos: [campos.d2Argumento, campos.d2Repertorio, campos.d2Explicacao, campos.d2Exemplificacao, campos.d2Desfecho],
       step: document.querySelector('.progresso-step[data-secao="d2"]'),
     },
     conc: {
-      campos: [campos.concRetomada, campos.concAgente, campos.concAcao, campos.concMeio, campos.concFinalidade, campos.concDetalhamento],
+      campos: [campos.concRetomada, campos.concAgente1, campos.concAcao1, campos.concMeio1, campos.concDetalhamento1, campos.concAgente2, campos.concAcao2, campos.concFinalidade, campos.concFraseDesfecho],
       step: document.querySelector('.progresso-step[data-secao="conc"]'),
     },
   };
@@ -355,21 +361,34 @@ document.addEventListener('DOMContentLoaded', () => {
       avisos.push({ tipo: 'warn', msg: '⚠️ Falta repertório sociocultural no Desenvolvimento 2' });
     }
 
-    // Conclusão — proposta de intervenção
-    const propCampos = [
-      { el: campos.concAgente,       nome: 'agente' },
-      { el: campos.concAcao,         nome: 'ação' },
-      { el: campos.concMeio,         nome: 'meio' },
-      { el: campos.concFinalidade,   nome: 'finalidade' },
-      { el: campos.concDetalhamento, nome: 'detalhamento' },
+    // Conclusão — propostas de intervenção (2 agentes)
+    const prop1Campos = [
+      { el: campos.concAgente1,       nome: 'agente 1' },
+      { el: campos.concAcao1,         nome: 'ação 1' },
+      { el: campos.concMeio1,         nome: 'meio 1' },
+      { el: campos.concDetalhamento1, nome: 'detalhamento 1' },
     ];
 
-    const propVazios = propCampos.filter(c => !c.el.value.trim());
-    if (propVazios.length === propCampos.length) {
+    const prop2Campos = [
+      { el: campos.concAgente2,     nome: 'agente 2' },
+      { el: campos.concAcao2,       nome: 'ação 2' },
+    ];
+
+    const prop1Vazios = prop1Campos.filter(c => !c.el.value.trim());
+    const prop2Vazios = prop2Campos.filter(c => !c.el.value.trim());
+    const finalidadeVazia = !campos.concFinalidade.value.trim();
+
+    if (prop1Vazios.length === prop1Campos.length && prop2Vazios.length === prop2Campos.length) {
       avisos.push({ tipo: 'error', msg: '❌ Falta proposta de intervenção (zera a Competência 5!)' });
-    } else if (propVazios.length > 0) {
-      const faltam = propVazios.map(c => c.nome).join(', ');
-      avisos.push({ tipo: 'warn', msg: `⚠️ Proposta de intervenção incompleta — falta: ${faltam}` });
+    } else {
+      const faltasP1 = prop1Vazios.map(c => c.nome);
+      const faltasP2 = prop2Vazios.map(c => c.nome);
+      const faltas = [...faltasP1, ...faltasP2];
+      if (finalidadeVazia) faltas.push('finalidade');
+
+      if (faltas.length > 0) {
+        avisos.push({ tipo: 'warn', msg: `⚠️ Proposta incompleta — falta: ${faltas.join(', ')}` });
+      }
     }
 
     // Linhas
