@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cronograma de Estudos</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #08060d;
+      --surface: #13101a;
+      --surface-hover: #1c1726;
+      --border: #2a2035;
+      --border-glow: #a855f740;
+      --text: #f0ecf4;
+      --text-muted: #9a8aab;
+      --accent: #a855f7;
+      --accent-hover: #c084fc;
+      --accent-glow: rgba(168, 85, 247, 0.25);
+      --pink: #db2777;
+      --pink-soft: #f9a8d4;
+      --success: #22c55e;
+      --success-soft: #4ade80;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gold: #fbbf24;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, .5);
+      --transition: all 0.3s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    /* ==================== HEADER ==================== */
+    .header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), #db2777);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header .data-hoje {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+    }
+
+
+    /* ==================== RESUMO DO DIA ==================== */
+    .resumo-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .resumo-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* ==================== DICA ==================== */
+    .dica-card {
+      background: linear-gradient(135deg, #13101a, #1c1726);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .dica-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+
+    .resumo-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem 0.5rem;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .resumo-item:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .resumo-item .emoji { font-size: 1.3rem; }
+
+    .resumo-item .valor {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .resumo-item .label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ==================== FORM ==================== */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.3rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-card h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .form-card input,
+    .form-card select {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.65rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    .form-card input::placeholder { color: var(--text-muted); }
+
+    .form-card input:focus,
+    .form-card select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+    }
+
+    .btn-adicionar {
+      width: 100%;
+      padding: 0.75rem;
+      background: linear-gradient(135deg, var(--accent), #db2777);
+      border: none;
+      color: white;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 0.3rem;
+    }
+
+    .btn-adicionar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(168, 85, 247, 0.35);
+    }
+
+    /* ==================== LISTA DE TAREFAS ==================== */
+    .tarefas-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.3rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tarefas-card h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .tarefa-item {
+      background: var(--surface-hover);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 0.9rem;
+      margin-bottom: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .tarefa-item:hover { transform: translateX(4px); }
+
+    .tarefa-item.concluida {
+      opacity: 0.5;
+      border-left-color: var(--success);
+    }
+
+    .tarefa-item.concluida .tarefa-nome {
+      text-decoration: line-through;
+    }
+
+    .tarefa-body { flex: 1; min-width: 0; }
+
+    .tarefa-nome {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .tarefa-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .tarefa-prioridade {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .prioridade-baixa { background: #1a3a2a; color: var(--success-soft); }
+    .prioridade-media { background: #3a3520; color: var(--gold); }
+    .prioridade-alta { background: #3a1a1a; color: #f87171; }
+
+    .btn-finalizar {
+      background: linear-gradient(135deg, var(--success), #16a34a);
+      border: none;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-finalizar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+    }
+
+    .badge-feita {
+      background: var(--success);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-del {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn-del:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .vazio {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 1.5rem;
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    /* ==================== PROGRESSO DO DIA ==================== */
+    .progresso-bar-container {
+      margin-bottom: 1.5rem;
+    }
+
+    .progresso-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .progresso-header .titulo {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .progresso-header .pct {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-hover);
+    }
+
+    .progresso-bar {
+      width: 100%;
+      height: 10px;
+      background: var(--surface-hover);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progresso-fill {
+      height: 100%;
+      border-radius: 5px;
+      background: linear-gradient(90deg, var(--accent), var(--success));
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+    }
+
+    /* ==================== MODAL ==================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.visivel {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-box {
+      background: var(--surface);
+      border: 2px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.visivel .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+    .modal-titulo {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent-hover);
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-msg {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.6rem 1.3rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .modal-btn.confirmar {
+      background: linear-gradient(135deg, var(--success), #16a34a);
+      color: white;
+    }
+
+    .modal-btn.confirmar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+    }
+
+    .modal-btn.cancelar {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .modal-btn.cancelar:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    /* ==================== RECOMPENSA ==================== */
+    .recompensa-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .recompensa-overlay.visivel {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .recompensa-box {
+      background: linear-gradient(135deg, #13101a, #1c1726);
+      border: 2px solid var(--gold);
+      border-radius: 18px;
+      padding: 2rem 1.5rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      transform: scale(0.7);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 0 40px rgba(251, 191, 36, 0.15);
+    }
+
+    .recompensa-overlay.visivel .recompensa-box {
+      transform: scale(1);
+    }
+
+    .recompensa-emoji {
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+      animation: pulse 0.6s ease infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); }
+    }
+
+    .recompensa-titulo {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--gold), #f59e0b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .recompensa-frase {
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.5;
+      margin-bottom: 0.3rem;
+      font-style: italic;
+    }
+
+    .recompensa-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .recompensa-btn {
+      padding: 0.6rem 2rem;
+      background: linear-gradient(135deg, var(--gold), #f59e0b);
+      border: none;
+      color: #13101a;
+      font-weight: 800;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .recompensa-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
+    }
+
+    /* ==================== CONFETTI ==================== */
+    .confetti-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 10002;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      animation: confettiFall 2s ease-out forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+      100% { opacity: 0; transform: translateY(400px) rotate(720deg) scale(0.3); }
+    }
+
+    /* ==================== RESPONSIVO ==================== */
+    @media (max-width: 480px) {
+      .resumo-2 { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    /* ==================== SCROLLBAR ==================== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <div class="confetti-container" id="confetti-container"></div>
+
+  <div class="app">
+
+    <!-- HEADER -->
+    <div class="header">
+      <h1>📚 Cronograma de Estudos</h1>
+      <div class="data-hoje" id="data-hoje"></div>
+    </div>
+
+
+    <!-- RESUMO -->
+    <div class="resumo-row resumo-2">
+      <div class="resumo-item">
+        <div class="emoji">✅</div>
+        <div class="valor" id="stat-feitas">0</div>
+        <div class="label">Feitas hoje</div>
+      </div>
+      <div class="resumo-item">
+        <div class="emoji">📋</div>
+        <div class="valor" id="stat-total">0</div>
+        <div class="label">Total hoje</div>
+      </div>
+    </div>
+
+    <!-- PROGRESSO -->
+    <div class="progresso-bar-container">
+      <div class="progresso-header">
+        <span class="titulo">Progresso do dia</span>
+        <span class="pct" id="progresso-pct">0%</span>
+      </div>
+      <div class="progresso-bar">
+        <div class="progresso-fill" id="progresso-fill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- DICA -->
+    <div class="dica-card">
+      <span class="dica-icon">💡</span>
+      <span class="dica-texto">Adicione todas as suas tarefas do dia primeiro. Depois, vá finalizando conforme concluir cada uma.</span>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-card">
+      <h3>➕ Nova Tarefa</h3>
+      <div class="form-row">
+        <input type="text" id="inp-disciplina" placeholder="Disciplina (ex: Matemática)">
+        <select id="inp-prioridade">
+          <option value="">Prioridade</option>
+          <option value="baixa">🟢 Baixa</option>
+          <option value="media">🟡 Média</option>
+          <option value="alta">🔴 Alta</option>
+        </select>
+      </div>
+      <input type="text" id="inp-descricao" placeholder="O que você vai estudar? (ex: Derivadas e integrais)" style="width:100%; margin-bottom: 0.8rem;">
+      <button class="btn-adicionar" onclick="adicionarTarefa()">➕ Adicionar Tarefa</button>
+    </div>
+
+    <!-- TAREFAS -->
+    <div class="tarefas-card">
+      <h3>📋 Tarefas de Hoje</h3>
+      <div id="lista-tarefas">
+        <p class="vazio">Nenhuma tarefa ainda. Adicione uma acima! 📝</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL CONFIRMAÇÃO -->
+  <div class="modal-overlay" id="modal-confirmar">
+    <div class="modal-box">
+      <div class="modal-icon">⚠️</div>
+      <div class="modal-titulo">Finalizar Tarefa?</div>
+      <div class="modal-msg">Só marque como concluída se você <strong>realmente terminou</strong>. Seja honesto consigo mesmo — seu crescimento depende disso! 💪</div>
+      <div class="modal-btns">
+        <button class="modal-btn cancelar" onclick="fecharModal()">Cancelar</button>
+        <button class="modal-btn confirmar" onclick="confirmarFinalizacao()">✅ Sim, terminei!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOMPENSA -->
+  <div class="recompensa-overlay" id="recompensa-overlay">
+    <div class="recompensa-box">
+      <div class="recompensa-emoji" id="recompensa-emoji">🎉</div>
+      <div class="recompensa-titulo" id="recompensa-titulo">Muito bem!</div>
+      <div class="recompensa-frase" id="recompensa-frase"></div>
+      <div class="recompensa-sub" id="recompensa-sub"></div>
+      <button class="recompensa-btn" onclick="fecharRecompensa()">Continuar 💪</button>
+    </div>
+  </div>
+
+  <script>
+    /* ==============================================================
+       FRASES MOTIVACIONAIS
+    ============================================================== */
+
+    const RECOMPENSAS = [
+      { emoji: '🎉', titulo: 'Muito bem!', frase: 'Cada tarefa concluída é um passo a mais na direção certa.' },
+      { emoji: '🌟', titulo: 'Excelente!', frase: 'Você está construindo algo incrível — uma versão melhor de si mesmo.' },
+      { emoji: '💪', titulo: 'Parabéns!', frase: 'A disciplina de hoje é a liberdade de amanhã.' },
+      { emoji: '🚀', titulo: 'Incrível!', frase: 'Continue assim e nada vai te parar.' },
+      { emoji: '🔥', titulo: 'Mandou bem!', frase: 'O esforço que ninguém vê é o que constrói resultados que todos admiram.' },
+      { emoji: '✨', titulo: 'Sensacional!', frase: 'Mais uma concluída! Seu futuro eu agradece.' },
+      { emoji: '🏆', titulo: 'Campeão!', frase: 'Quem chega até o fim merece todo reconhecimento.' },
+      { emoji: '💎', titulo: 'Brilhante!', frase: 'Consistência é o que transforma o comum em extraordinário.' },
+      { emoji: '🎯', titulo: 'Na mosca!', frase: 'Foco e determinação — você tem os dois.' },
+      { emoji: '🌈', titulo: 'Orgulhe-se!', frase: 'Esse esforço está valendo a pena, pode acreditar.' },
+    ];
+
+    const RECOMPENSAS_TODAS = [
+      { emoji: '🏅', titulo: 'DIA COMPLETO!', frase: 'Você concluiu TODAS as tarefas de hoje! Isso é dedicação de verdade.' },
+      { emoji: '👑', titulo: 'PERFEITO!', frase: 'Dia 100% produtivo. Descanse com a consciência tranquila.' },
+      { emoji: '🎊', titulo: 'MISSÃO CUMPRIDA!', frase: 'Todas concluídas! Você provou que é capaz.' },
+    ];
+
+    /* ==============================================================
+       PERSISTÊNCIA
+    ============================================================== */
+    function hojeStr() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function getTarefas() {
+      const dados = JSON.parse(localStorage.getItem('estudo_tarefas') || '{}');
+      const hoje = hojeStr();
+      if (dados.data !== hoje) {
+        // Novo dia — reseta tarefas
+        return [];
+      }
+      return dados.tarefas || [];
+    }
+
+    function salvarTarefas(tarefas) {
+      localStorage.setItem('estudo_tarefas', JSON.stringify({
+        data: hojeStr(),
+        tarefas
+      }));
+    }
+
+
+
+    /* ==============================================================
+       TAREFAS
+    ============================================================== */
+    function adicionarTarefa() {
+      const disciplina = document.getElementById('inp-disciplina').value.trim();
+      const prioridade = document.getElementById('inp-prioridade').value;
+      const descricao = document.getElementById('inp-descricao').value.trim();
+
+      if (!disciplina || !prioridade) {
+        alert('⚠️ Preencha a disciplina e a prioridade!');
+        return;
+      }
+
+      const tarefas = getTarefas();
+      tarefas.push({
+        id: Date.now(),
+        disciplina,
+        prioridade,
+        descricao,
+        concluida: false,
+        criadaEm: new Date().toISOString()
+      });
+
+      salvarTarefas(tarefas);
+
+      document.getElementById('inp-disciplina').value = '';
+      document.getElementById('inp-prioridade').value = '';
+      document.getElementById('inp-descricao').value = '';
+
+      renderizar();
+    }
+
+    let tarefaParaFinalizar = null;
+
+    function pedirFinalizacao(id) {
+      tarefaParaFinalizar = id;
+      document.getElementById('modal-confirmar').classList.add('visivel');
+    }
+
+    function fecharModal() {
+      document.getElementById('modal-confirmar').classList.remove('visivel');
+      tarefaParaFinalizar = null;
+    }
+
+    function confirmarFinalizacao() {
+      if (tarefaParaFinalizar === null) return;
+      const id = tarefaParaFinalizar;
+      fecharModal();
+
+      const tarefas = getTarefas();
+      const tarefa = tarefas.find(t => t.id === id);
+      if (!tarefa || tarefa.concluida) return;
+
+      tarefa.concluida = true;
+      tarefa.concluidaEm = new Date().toISOString();
+      salvarTarefas(tarefas);
+
+      renderizar();
+
+      // Mostrar recompensa
+      setTimeout(() => mostrarRecompensa(tarefas), 300);
+    }
+
+    function deletarTarefa(id) {
+      let tarefas = getTarefas();
+      tarefas = tarefas.filter(t => t.id !== id);
+      salvarTarefas(tarefas);
+      renderizar();
+    }
+
+    /* ==============================================================
+       RECOMPENSA
+    ============================================================== */
+    function mostrarRecompensa(tarefas) {
+      const total = tarefas.length;
+      const feitas = tarefas.filter(t => t.concluida).length;
+      let rec;
+
+      if (feitas === total && total > 0) {
+        rec = RECOMPENSAS_TODAS[Math.floor(Math.random() * RECOMPENSAS_TODAS.length)];
+      } else {
+        rec = RECOMPENSAS[Math.floor(Math.random() * RECOMPENSAS.length)];
+      }
+
+      document.getElementById('recompensa-emoji').textContent = rec.emoji;
+      document.getElementById('recompensa-titulo').textContent = rec.titulo;
+      document.getElementById('recompensa-frase').textContent = rec.frase;
+      document.getElementById('recompensa-sub').textContent = `${feitas} de ${total} tarefa${total > 1 ? 's' : ''} concluída${feitas > 1 ? 's' : ''}`;
+
+      document.getElementById('recompensa-overlay').classList.add('visivel');
+      soltarConfetti();
+      tocarSom();
+    }
+
+    function fecharRecompensa() {
+      document.getElementById('recompensa-overlay').classList.remove('visivel');
+    }
+
+    function soltarConfetti() {
+      const container = document.getElementById('confetti-container');
+      const cores = ['#a855f7', '#db2777', '#fbbf24', '#22c55e', '#38bdf8', '#f9a8d4', '#ef4444', '#c084fc'];
+      for (let i = 0; i < 50; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + '%';
+        c.style.top = (Math.random() * 30 - 10) + '%';
+        c.style.background = cores[Math.floor(Math.random() * cores.length)];
+        c.style.animationDelay = Math.random() * 0.6 + 's';
+        c.style.width = (5 + Math.random() * 8) + 'px';
+        c.style.height = (5 + Math.random() * 8) + 'px';
+        c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        container.appendChild(c);
+        setTimeout(() => c.remove(), 2500);
+      }
+    }
+
+    function tocarSom() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notas = [523.25, 659.25, 783.99, 1046.5];
+        notas.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.frequency.value = freq;
+          osc.type = 'triangle';
+          gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.12 + 0.25);
+          osc.start(ctx.currentTime + i * 0.12);
+          osc.stop(ctx.currentTime + i * 0.12 + 0.3);
+        });
+      } catch (e) {}
+    }
+
+    /* ==============================================================
+       RENDERIZAÇÃO
+    ============================================================== */
+    function renderizar() {
+      const tarefas = getTarefas();
+      const total = tarefas.length;
+      const feitas = tarefas.filter(t => t.concluida).length;
+
+      // Stats
+      document.getElementById('stat-feitas').textContent = feitas;
+      document.getElementById('stat-total').textContent = total;
+
+      // Progresso
+      const pct = total > 0 ? Math.round((feitas / total) * 100) : 0;
+      document.getElementById('progresso-pct').textContent = pct + '%';
+      document.getElementById('progresso-fill').style.width = pct + '%';
+
+      // Lista
+      const container = document.getElementById('lista-tarefas');
+      if (total === 0) {
+        container.innerHTML = '<p class="vazio">Nenhuma tarefa ainda. Adicione uma acima! 📝</p>';
+        return;
+      }
+
+      const prioridadeEmoji = { baixa: '🟢', media: '🟡', alta: '🔴' };
+      const prioridadeLabel = { baixa: 'Baixa', media: 'Média', alta: 'Alta' };
+
+      // Ordenar: não concluídas primeiro, depois por prioridade (alta > media > baixa)
+      const ordem = { alta: 0, media: 1, baixa: 2 };
+      const ordenadas = [...tarefas].sort((a, b) => {
+        if (a.concluida !== b.concluida) return a.concluida ? 1 : -1;
+        return ordem[a.prioridade] - ordem[b.prioridade];
+      });
+
+      container.innerHTML = ordenadas.map(t => `
+        <div class="tarefa-item ${t.concluida ? 'concluida' : ''}">
+          <div class="tarefa-body">
+            <div class="tarefa-nome">${prioridadeEmoji[t.prioridade]} ${t.disciplina}</div>
+            ${t.descricao ? `<div class="tarefa-desc">${t.descricao}</div>` : ''}
+          </div>
+          <span class="tarefa-prioridade prioridade-${t.prioridade}">${prioridadeLabel[t.prioridade]}</span>
+          ${t.concluida
+            ? `<span class="badge-feita">✅ Feita</span>
+               <button class="btn-del" onclick="deletarTarefa(${t.id})" title="Remover">🗑️</button>`
+            : `<button class="btn-finalizar" onclick="pedirFinalizacao(${t.id})">✅ Finalizar</button>
+               <button class="btn-del" onclick="deletarTarefa(${t.id})" title="Remover">🗑️</button>`
+          }
+        </div>
+      `).join('');
+    }
+
+    /* ==============================================================
+       INICIALIZAÇÃO
+    ============================================================== */
+    function inicializar() {
+      // Data
+      const hoje = new Date();
+      const opcoes = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      document.getElementById('data-hoje').textContent = hoje.toLocaleDateString('pt-BR', opcoes);
+
+      renderizar();
+
+      // Enter no campo de descrição
+      document.getElementById('inp-descricao').addEventListener('keypress', e => {
+        if (e.key === 'Enter') adicionarTarefa();
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', inicializar);
+  </script>
+</body>
+</html>

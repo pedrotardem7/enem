@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Estudos — Sophia</title>
+  <link rel="stylesheet" href="painel.css">
+</head>
+<body>
+  <div class="painel-container">
+
+    <!-- TELA INICIAL -->
+    <div id="tela-inicial" class="tela-inicial active">
+
+      <!-- GLOW BACKGROUND -->
+      <div class="glow-bg">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+      </div>
+
+      <!-- HERO -->
+      <header class="hero">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          <span>Online</span>
+        </div>
+        <div class="hero-avatar">S</div>
+        <div class="hero-greeting" id="hero-greeting">Boa noite,</div>
+        <h1 class="hero-nome">Sophia</h1>
+        <p class="hero-sub" id="hero-sub"></p>
+      </header>
+
+      <!-- INFO CARDS -->
+      <div class="info-row">
+        <div class="info-card">
+          <div class="info-icon">📅</div>
+          <div class="info-dados">
+            <div class="info-valor" id="info-data"></div>
+            <div class="info-label" id="info-dia-semana"></div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">🕐</div>
+          <div class="info-dados">
+            <div class="info-valor" id="info-hora"></div>
+            <div class="info-label">Horário atual</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">🎯</div>
+          <div class="info-dados">
+            <div class="info-valor" id="info-tarefas">0</div>
+            <div class="info-label">Tarefas hoje</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FRASE -->
+      <div class="frase-hero" id="frase-hero"></div>
+
+      <!-- FERRAMENTAS -->
+      <div class="section-titulo">
+        <span class="section-line"></span>
+        <span>Suas Ferramentas</span>
+        <span class="section-line"></span>
+      </div>
+
+      <div class="grid-ferramentas" id="grid-ferramentas"></div>
+
+    </div>
+
+    <!-- TELA DE FERRAMENTAS -->
+    <div id="tela-ferramenta" class="tela-ferramenta">
+      
+      <!-- HEADER COM BOTÃO VOLTAR -->
+      <header class="ferramenta-header">
+        <button class="btn-voltar" id="btn-voltar">
+          <span>←</span> Voltar
+        </button>
+        <h2 id="ferramenta-titulo">Organizador de Redação</h2>
+        <div class="espacador"></div>
+      </header>
+
+      <!-- CONTEÚDO DAS FERRAMENTAS -->
+      <div class="ferramentas-container">
+
+        <!-- FERRAMENTA 1: REDAÇÃO -->
+        <section id="redacao" class="ferramenta-content active">
+          <iframe src="redacao.html" class="ferramenta-iframe" style="border:none;"></iframe>
+        </section>
+
+        <!-- FERRAMENTA 2: CRONOGRAMA -->
+        <section id="cronograma" class="ferramenta-content">
+          <iframe src="cronograma.html" class="ferramenta-iframe" style="border:none;"></iframe>
+        </section>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="painel.js"></script>
+</body>
+</html>
