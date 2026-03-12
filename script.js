@@ -62,49 +62,100 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ---------- BANCO DE REPERTÓRIOS ----------
+  // ---------- BANCO DE REPERTÓRIOS (Carregado via repertorios.js) ----------
 
-  // Copiar repertório ao clicar
-  document.querySelectorAll('.rep-card[data-copy]').forEach(card => {
-    card.addEventListener('click', () => {
-      const texto = card.querySelector('.rep-texto').textContent.trim();
-      const autor = card.querySelector('.rep-autor').textContent.trim();
-      const completo = texto + ' ' + autor;
+  function renderizarRepertorios() {
+    const container = document.getElementById('repertorios-lista');
+    if (!container) {
+      console.warn('Elemento #repertorios-lista não encontrado');
+      return;
+    }
 
-      navigator.clipboard.writeText(completo).then(() => {
-        card.classList.add('copied');
-        showToast('Repertório copiado!');
-        setTimeout(() => card.classList.remove('copied'), 1500);
+    // Verifica se window.REPERTORIOS foi carregado
+    if (!window.REPERTORIOS || !window.REPERTORIOS.repertorios) {
+      container.innerHTML = '<p style="color: var(--danger);">Erro: Repertórios não carregados.</p>';
+      console.error('❌ window.REPERTORIOS não encontrado');
+      return;
+    }
+
+    const data = window.REPERTORIOS;
+
+    // Renderiza os repertórios
+    container.innerHTML = data.repertorios.map(grupo => `
+      <details class="rep-grupo" data-tema="${grupo.tema}">
+        <summary><span class="rep-icone">${grupo.icone}</span> <strong>${grupo.titulo}</strong></summary>
+        <div class="rep-cards">
+          ${grupo.cards.map(card => `
+            <div class="rep-card" data-copy>
+              <span class="rep-tipo">${card.tipo}</span>
+              <p class="rep-texto">${card.texto}</p>
+              <span class="rep-autor">${card.autor}</span>
+            </div>
+          `).join('')}
+        </div>
+      </details>
+    `).join('');
+
+    console.log(`✓ ${data.repertorios.length} temas renderizados`);
+
+    // Reabilitar eventos de cópia após renderizar
+    ativarCopiaRepertorios();
+  }
+
+  // Ativa funcionalidade de cópia nos repertórios
+  function ativarCopiaRepertorios() {
+    document.querySelectorAll('.rep-card[data-copy]').forEach(card => {
+      card.addEventListener('click', () => {
+        const texto = card.querySelector('.rep-texto').textContent.trim();
+        const autor = card.querySelector('.rep-autor').textContent.trim();
+        const completo = texto + ' ' + autor;
+
+        navigator.clipboard.writeText(completo).then(() => {
+          card.classList.add('copied');
+          showToast('Repertório copiado!');
+          setTimeout(() => card.classList.remove('copied'), 1500);
+        });
       });
     });
-  });
+  }
 
-  // Filtro de repertórios
-  const filtroRep = document.getElementById('filtro-repertorios');
-  if (filtroRep) {
+  // Ativa filtro de repertórios
+  function ativarFiltroRepertorios() {
+    const filtroRep = document.getElementById('filtro-repertorios');
+    if (!filtroRep) return;
+
+    // Mostra todos inicialmente
+    const mostrarTodos = () => {
+      document.querySelectorAll('.rep-grupo').forEach(grupo => {
+        grupo.hidden = false;
+        grupo.open = false;
+        grupo.querySelectorAll('.rep-card').forEach(c => { c.style.display = ''; });
+      });
+    };
+
+    // Filtrar quando digita
     filtroRep.addEventListener('input', () => {
       const busca = filtroRep.value.toLowerCase().trim();
+      
+      if (!busca) {
+        mostrarTodos();
+        return;
+      }
+
       const grupos = document.querySelectorAll('.rep-grupo');
+      let temAlgoParaMostrar = false;
 
       grupos.forEach(grupo => {
-        if (!busca) {
-          grupo.hidden = false;
-          grupo.open = false;
-          // Mostrar todos os cards
-          grupo.querySelectorAll('.rep-card').forEach(c => { c.style.display = ''; });
-          return;
-        }
-
         const temas = (grupo.dataset.tema || '').toLowerCase();
-        const tituloGrupo = grupo.querySelector('summary').textContent.toLowerCase();
+        const tituloGrupo = grupo.querySelector('summary strong').textContent.toLowerCase();
 
-        // Verificar cards individualmente
         let temMatch = false;
         grupo.querySelectorAll('.rep-card').forEach(card => {
           const textoCard = card.textContent.toLowerCase();
           if (textoCard.includes(busca) || temas.includes(busca) || tituloGrupo.includes(busca)) {
             card.style.display = '';
             temMatch = true;
+            temAlgoParaMostrar = true;
           } else {
             card.style.display = 'none';
           }
@@ -113,8 +164,25 @@ document.addEventListener('DOMContentLoaded', () => {
         grupo.hidden = !temMatch;
         if (temMatch) grupo.open = true;
       });
+
+      // Debug
+      if (!temAlgoParaMostrar) {
+        console.log(`Nenhum repertório encontrado para: "${busca}"`);
+      }
+    });
+
+    // Limpar filtro ao clicar no campo e pressionar Escape
+    filtroRep.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        filtroRep.value = '';
+        mostrarTodos();
+      }
     });
   }
+
+  // Renderiza repertórios ao iniciar
+  renderizarRepertorios();
+  ativarFiltroRepertorios();
 
   // ---------- HELPERS ----------
 
