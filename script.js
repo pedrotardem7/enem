@@ -9,10 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
     introTese:        document.getElementById('intro-tese'),
     d1Argumento:      document.getElementById('d1-argumento'),
     d1Explicacao:     document.getElementById('d1-explicacao'),
+    d1Exemplificacao: document.getElementById('d1-exemplificacao'),
     d1Repertorio:     document.getElementById('d1-repertorio'),
+    d1Desfecho:       document.getElementById('d1-desfecho'),
     d2Argumento:      document.getElementById('d2-argumento'),
     d2Explicacao:     document.getElementById('d2-explicacao'),
+    d2Exemplificacao: document.getElementById('d2-exemplificacao'),
     d2Repertorio:     document.getElementById('d2-repertorio'),
+    d2Desfecho:       document.getElementById('d2-desfecho'),
     concRetomada:     document.getElementById('conc-retomada'),
     concAgente:       document.getElementById('conc-agente'),
     concAcao:         document.getElementById('conc-acao'),
@@ -122,11 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
       .filter(Boolean).join(' ');
     if (intro) partes.push(intro);
 
-    const d1 = [limpar(campos.d1Argumento.value), limpar(campos.d1Explicacao.value), limpar(campos.d1Repertorio.value)]
+    const d1 = [limpar(campos.d1Argumento.value), limpar(campos.d1Explicacao.value), limpar(campos.d1Exemplificacao.value), limpar(campos.d1Repertorio.value), limpar(campos.d1Desfecho.value)]
       .filter(Boolean).join(' ');
     if (d1) partes.push(d1);
 
-    const d2 = [limpar(campos.d2Argumento.value), limpar(campos.d2Explicacao.value), limpar(campos.d2Repertorio.value)]
+    const d2 = [limpar(campos.d2Argumento.value), limpar(campos.d2Explicacao.value), limpar(campos.d2Exemplificacao.value), limpar(campos.d2Repertorio.value), limpar(campos.d2Desfecho.value)]
       .filter(Boolean).join(' ');
     if (d2) partes.push(d2);
 
@@ -277,11 +281,11 @@ document.addEventListener('DOMContentLoaded', () => {
       step: document.querySelector('.progresso-step[data-secao="intro"]'),
     },
     d1: {
-      campos: [campos.d1Argumento, campos.d1Explicacao, campos.d1Repertorio],
+      campos: [campos.d1Argumento, campos.d1Explicacao, campos.d1Exemplificacao, campos.d1Repertorio, campos.d1Desfecho],
       step: document.querySelector('.progresso-step[data-secao="d1"]'),
     },
     d2: {
-      campos: [campos.d2Argumento, campos.d2Explicacao, campos.d2Repertorio],
+      campos: [campos.d2Argumento, campos.d2Explicacao, campos.d2Exemplificacao, campos.d2Repertorio, campos.d2Desfecho],
       step: document.querySelector('.progresso-step[data-secao="d2"]'),
     },
     conc: {
